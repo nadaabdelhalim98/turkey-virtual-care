@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>e-Nabız Clinical Alert Layer — Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #080b0f;
+  --bg2:      #0e1318;
+  --bg3:      #141b22;
+  --bg4:      #1a2430;
+  --border:   #1e2d3d;
+  --border2:  #243444;
+  --ink:      #d4dde8;
+  --mid:      #6a8099;
+  --muted:    #334455;
+
+  --green:    #2aaa6a;
+  --green-l:  rgba(42,170,106,0.12);
+  --green-b:  rgba(42,170,106,0.3);
+  --amber:    #d4a030;
+  --amber-l:  rgba(212,160,48,0.12);
+  --amber-b:  rgba(212,160,48,0.3);
+  --red:      #d44040;
+  --red-l:    rgba(212,64,64,0.12);
+  --red-b:    rgba(212,64,64,0.35);
+  --blue:     #3a90d4;
+  --blue-l:   rgba(58,144,212,0.12);
+  --blue-b:   rgba(58,144,212,0.3);
+  --teal:     #2ab0aa;
+  --teal-l:   rgba(42,176,170,0.12);
+  --purple:   #8a6ad4;
+  --purple-l: rgba(138,106,212,0.12);
+
+  --mono:     'JetBrains Mono', monospace;
+  --sans:     'Sora', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 52px; position: sticky; top: 0; z-index: 200;
+}
+.topbar-brand { display: flex; align-items: center; gap: 12px; }
+.brand-logo {
+  width: 28px; height: 28px; border-radius: 5px;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 0.7rem; font-weight: 600; color: #fff;
+}
+.brand-name { font-family: var(--mono); font-size: 0.78rem; color: var(--ink); }
+.brand-name span { color: var(--teal); }
+.brand-sub { font-size: 0.62rem; color: var(--muted); letter-spacing: 1px; }
+.topbar-status {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 0.65rem; color: var(--green);
+  background: var(--green-l); border: 1px solid var(--green-b);
+  padding: 4px 10px; border-radius: 3px;
+}
+.status-pulse {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+.topbar-right { display: flex; gap: 8px; align-items: center; }
+.proto-badge {
+  font-family: var(--mono); font-size: 0.58rem; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  background: var(--amber-l); border: 1px solid var(--amber-b);
+  color: var(--amber); padding: 3px 8px; border-radius: 2px;
+}
+
+/* ── TABS ── */
+.tab-bar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex; gap: 0;
+}
+.tab {
+  padding: 12px 20px;
+  font-family: var(--mono); font-size: 0.7rem; font-weight: 500;
+  color: var(--muted); cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: all 0.15s; white-space: nowrap;
+  display: flex; align-items: center; gap: 7px;
+}
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+.tab-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--muted); flex-shrink: 0;
+}
+.tab.active .tab-dot { background: var(--teal); }
+
+/* ── LAYOUT ── */
+.app { display: flex; height: calc(100vh - 101px); }
+.panel { display: none; flex: 1; overflow: hidden; }
+.panel.active { display: flex; flex-direction: column; }
+
+/* ── ENGINE TAB ── */
+.engine-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr 300px;
+  flex: 1; overflow: hidden;
+}
+.engine-col {
+  border-right: 1px solid var(--border);
+  overflow-y: auto; display: flex; flex-direction: column;
+}
+.engine-col:last-child { border-right: none; }
+.col-header {
+  padding: 14px 18px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono); font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--mid);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.col-header-badge {
+  font-size: 0.58rem; padding: 2px 7px; border-radius: 2px;
+  background: var(--bg4); color: var(--mid);
+  border: 1px solid var(--border2);
+}
+
+/* Patient list */
+.patient-item {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.14s;
+  display: flex; align-items: center; gap: 10px;
+}
+.patient-item:hover { background: var(--bg3); }
+.patient-item.selected { background: var(--bg4); border-left: 2px solid var(--teal); }
+.patient-item.alert { border-left: 2px solid var(--red); background: rgba(212,64,64,0.04); }
+.p-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 0.65rem; font-weight: 600;
+  color: #fff; flex-shrink: 0;
+}
+.p-info { flex: 1; min-width: 0; }
+.p-name { font-size: 0.78rem; font-weight: 500; color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.p-detail { font-family: var(--mono); font-size: 0.62rem; color: var(--mid); margin-top: 1px; }
+.p-bp {
+  font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* BP Chart area */
+.chart-area { padding: 18px; flex: 1; }
+.chart-header { margin-bottom: 14px; }
+.chart-patient-name {
+  font-size: 0.9rem; font-weight: 500; color: var(--ink); margin-bottom: 2px;
+}
+.chart-meta { font-family: var(--mono); font-size: 0.62rem; color: var(--mid); }
+.bp-chart-wrap {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 6px; padding: 16px; margin-bottom: 14px;
+}
+.bp-chart-title {
+  font-family: var(--mono); font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--mid);
+  margin-bottom: 12px;
+}
+.bp-chart {
+  height: 120px; display: flex; align-items: flex-end; gap: 6px;
+  padding-top: 8px; position: relative;
+}
+/* threshold lines */
+.threshold-line {
+  position: absolute; left: 0; right: 0;
+  border-top: 1px dashed;
+  display: flex; align-items: flex-start; justify-content: flex-end;
+}
+.threshold-label {
+  font-family: var(--mono); font-size: 0.55rem;
+  padding: 1px 4px; border-radius: 2px; margin-top: -8px;
+}
+.bp-day-col { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; }
+.bp-bars { display: flex; gap: 2px; align-items: flex-end; height: 100px; }
+.bp-bar {
+  width: 8px; border-radius: 2px 2px 0 0;
+  transition: height 0.4s ease;
+}
+.bp-bar.systolic { background: var(--red); opacity: 0.8; }
+.bp-bar.diastolic { background: var(--blue); opacity: 0.7; }
+.bp-day-label {
+  font-family: var(--mono); font-size: 0.55rem; color: var(--muted);
+}
+.bp-day-val {
+  font-family: var(--mono); font-size: 0.58rem; color: var(--mid);
+  white-space: nowrap;
+}
+.bp-legend { display: flex; gap: 14px; margin-top: 8px; }
+.bp-legend-item { display: flex; align-items: center; gap: 5px;
+  font-family: var(--mono); font-size: 0.6rem; color: var(--mid); }
+.bp-legend-dot { width: 8px; height: 8px; border-radius: 1px; }
+
+/* Alert status */
+.alert-status-box {
+  border-radius: 6px; padding: 14px 16px; margin-bottom: 12px;
+  border: 1px solid;
+}
+.alert-status-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+}
+.alert-status-icon { font-size: 1rem; }
+.alert-status-title {
+  font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+}
+.alert-status-body { font-size: 0.74rem; color: var(--mid); line-height: 1.6; }
+.alert-trigger-btn {
+  width: 100%; margin-top: 10px;
+  padding: 9px; border-radius: 4px;
+  font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.15s;
+  letter-spacing: 0.5px;
+}
+
+/* Algorithm log */
+.algo-log {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 12px; font-family: var(--mono);
+  font-size: 0.65rem; line-height: 1.8;
+  max-height: 200px; overflow-y: auto;
+}
+.log-line { display: flex; gap: 8px; }
+.log-time { color: var(--muted); flex-shrink: 0; }
+.log-level { flex-shrink: 0; font-weight: 600; }
+.log-level.info { color: var(--blue); }
+.log-level.warn { color: var(--amber); }
+.log-level.alert { color: var(--red); }
+.log-level.ok { color: var(--green); }
+.log-msg { color: var(--mid); }
+
+/* Alert queue */
+.alert-queue-item {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.14s;
+}
+.alert-queue-item:hover { background: var(--bg3); }
+.alert-queue-item.critical { border-left: 2px solid var(--red); }
+.alert-queue-item.warning { border-left: 2px solid var(--amber); }
+.aq-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.aq-patient { font-size: 0.78rem; font-weight: 500; color: var(--ink); }
+.aq-time { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); }
+.aq-body { font-size: 0.72rem; color: var(--mid); line-height: 1.5; }
+.aq-badge {
+  font-family: var(--mono); font-size: 0.58rem; font-weight: 600;
+  padding: 2px 6px; border-radius: 2px; margin-top: 5px;
+  display: inline-block;
+}
+.aq-badge.critical { background: var(--red-l); color: var(--red); border: 1px solid var(--red-b); }
+.aq-badge.warning { background: var(--amber-l); color: var(--amber); border: 1px solid var(--amber-b); }
+.aq-badge.resolved { background: var(--green-l); color: var(--green); border: 1px solid var(--green-b); }
+
+/* ── HCP DASHBOARD TAB ── */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  flex: 1; overflow: hidden;
+}
+.dash-sidebar {
+  background: var(--bg2); border-right: 1px solid var(--border);
+  overflow-y: auto;
+}
+.dash-main { overflow-y: auto; padding: 20px 24px; }
+
+.dash-section { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.dash-section-label {
+  font-family: var(--mono); font-size: 0.58rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+  margin-bottom: 8px;
+}
+.dash-nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 8px; border-radius: 4px;
+  cursor: pointer; transition: background 0.14s;
+  margin-bottom: 2px;
+}
+.dash-nav-item:hover { background: var(--bg3); }
+.dash-nav-item.active { background: var(--bg4); }
+.dash-nav-icon { font-size: 0.85rem; width: 16px; text-align: center; flex-shrink: 0; }
+.dash-nav-text { font-size: 0.74rem; color: var(--ink); }
+.dash-nav-badge {
+  margin-left: auto; font-family: var(--mono); font-size: 0.58rem; font-weight: 700;
+  padding: 1px 5px; border-radius: 2px;
+}
+
+/* Alert card in dashboard */
+.alert-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 18px 20px;
+  margin-bottom: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.alert-card.critical { border-left: 3px solid var(--red); }
+.alert-card.warning { border-left: 3px solid var(--amber); }
+.alert-card.resolved { border-left: 3px solid var(--green); opacity: 0.7; }
+.ac-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; gap: 12px; }
+.ac-patient-info {}
+.ac-patient-name { font-size: 0.88rem; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+.ac-patient-meta { font-family: var(--mono); font-size: 0.6rem; color: var(--mid); }
+.ac-badge {
+  font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
+  padding: 3px 8px; border-radius: 3px; flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+.ac-body { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.ac-stat { background: var(--bg4); border-radius: 5px; padding: 10px 12px; }
+.ac-stat-label {
+  font-family: var(--mono); font-size: 0.58rem; font-weight: 600;
+  letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted);
+  margin-bottom: 4px;
+}
+.ac-stat-val {
+  font-family: var(--mono); font-size: 1.1rem; font-weight: 600; line-height: 1;
+}
+.ac-stat-sub { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); margin-top: 3px; }
+.ac-trend {
+  background: var(--bg4); border-radius: 5px; padding: 10px 12px;
+  margin-bottom: 12px; font-family: var(--mono); font-size: 0.65rem;
+  color: var(--mid); line-height: 1.7;
+}
+.ac-trend-title {
+  font-size: 0.58rem; font-weight: 600; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+}
+.ac-medications { margin-bottom: 12px; }
+.ac-med-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0; border-bottom: 1px solid var(--border);
+  font-size: 0.74rem;
+}
+.ac-med-row:last-child { border-bottom: none; }
+.ac-med-name { color: var(--ink); font-weight: 500; }
+.ac-med-dose { color: var(--mid); font-family: var(--mono); font-size: 0.65rem; }
+.ac-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.ac-btn {
+  padding: 7px 14px; border-radius: 4px; cursor: pointer;
+  font-family: var(--mono); font-size: 0.68rem; font-weight: 600;
+  border: none; transition: all 0.15s; letter-spacing: 0.3px;
+}
+.ac-btn.primary { background: var(--teal); color: #fff; }
+.ac-btn.primary:hover { background: #229990; }
+.ac-btn.secondary { background: var(--bg4); color: var(--mid); border: 1px solid var(--border2); }
+.ac-btn.secondary:hover { background: var(--border2); color: var(--ink); }
+.ac-btn.danger { background: var(--red-l); color: var(--red); border: 1px solid var(--red-b); }
+.ac-btn.danger:hover { background: var(--red); color: #fff; }
+
+/* Summary stats */
+.summary-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-bottom: 20px;
+}
+.summary-stat {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 6px; padding: 14px 16px;
+}
+.ss-num {
+  font-family: var(--mono); font-size: 1.6rem; font-weight: 600;
+  line-height: 1; margin-bottom: 4px;
+}
+.ss-label {
+  font-family: var(--mono); font-size: 0.58rem; font-weight: 600;
+  letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted);
+}
+
+/* ── API SPEC TAB ── */
+.api-layout { flex: 1; overflow-y: auto; padding: 24px 28px; }
+.api-intro {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px 24px; margin-bottom: 24px;
+}
+.api-intro-title {
+  font-family: var(--mono); font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--teal);
+  margin-bottom: 8px;
+}
+.api-intro-body { font-size: 0.8rem; color: var(--mid); line-height: 1.7; }
+.api-intro-body strong { color: var(--ink); }
+
+.endpoint-block {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; overflow: hidden; margin-bottom: 16px;
+}
+.endpoint-header {
+  padding: 14px 18px; background: var(--bg4);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.method-badge {
+  font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
+  padding: 3px 8px; border-radius: 3px; flex-shrink: 0;
+}
+.method-badge.get { background: var(--blue-l); color: var(--blue); border: 1px solid var(--blue-b); }
+.method-badge.post { background: var(--green-l); color: var(--green); border: 1px solid var(--green-b); }
+.method-badge.put { background: var(--amber-l); color: var(--amber); border: 1px solid var(--amber-b); }
+.endpoint-path {
+  font-family: var(--mono); font-size: 0.78rem; color: var(--ink); font-weight: 500;
+}
+.endpoint-desc { font-size: 0.72rem; color: var(--mid); margin-left: auto; }
+.endpoint-body { padding: 16px 18px; }
+.param-table {
+  width: 100%; border-collapse: collapse; margin-bottom: 12px;
+}
+.param-table th {
+  font-family: var(--mono); font-size: 0.58rem; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
+  padding: 6px 10px; text-align: left; border-bottom: 1px solid var(--border);
+}
+.param-table td {
+  padding: 7px 10px; font-size: 0.72rem; border-bottom: 1px solid rgba(30,45,61,0.5);
+  vertical-align: top;
+}
+.param-table td:first-child { font-family: var(--mono); color: var(--blue); }
+.param-table td:nth-child(2) { font-family: var(--mono); color: var(--purple); }
+.param-table td:nth-child(3) { color: var(--mid); }
+.required-tag {
+  font-family: var(--mono); font-size: 0.55rem; font-weight: 700;
+  background: var(--red-l); color: var(--red); border: 1px solid var(--red-b);
+  padding: 1px 4px; border-radius: 2px; margin-left: 4px;
+}
+
+.code-block {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 5px; padding: 14px 16px;
+  font-family: var(--mono); font-size: 0.68rem; line-height: 1.8;
+  overflow-x: auto; white-space: pre; color: var(--mid);
+  margin: 8px 0;
+}
+.code-block .k { color: #5a9fd4; }  /* keyword */
+.code-block .s { color: #7ac57a; }  /* string */
+.code-block .n { color: #d4a030; }  /* number */
+.code-block .c { color: #445566; }  /* comment */
+.code-block .p { color: #9a7ad4; }  /* property */
+
+.api-section-title {
+  font-family: var(--mono); font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--teal);
+  margin: 24px 0 12px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* webhook flow */
+.webhook-flow {
+  display: flex; align-items: center; gap: 0;
+  background: var(--bg4); border: 1px solid var(--border);
+  border-radius: 6px; padding: 16px; margin-bottom: 16px;
+  overflow-x: auto;
+}
+.wf-step {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; flex-shrink: 0; min-width: 100px;
+}
+.wf-box {
+  padding: 7px 12px; border-radius: 5px;
+  font-family: var(--mono); font-size: 0.65rem; font-weight: 600;
+  text-align: center; border: 1px solid; line-height: 1.3;
+}
+.wf-label { font-family: var(--mono); font-size: 0.58rem; color: var(--muted); text-align: center; }
+.wf-arrow {
+  font-family: var(--mono); font-size: 0.65rem; color: var(--muted);
+  padding: 0 4px; flex-shrink: 0; align-self: center; padding-bottom: 18px;
+}
+.wf-arrow-label { font-size: 0.55rem; color: var(--muted); }
+
+/* threshold config table */
+.threshold-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--bg4); border-radius: 6px; overflow: hidden;
+  border: 1px solid var(--border); margin-bottom: 16px;
+}
+.threshold-table th {
+  font-family: var(--mono); font-size: 0.58rem; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
+  padding: 10px 14px; text-align: left;
+  background: var(--bg); border-bottom: 1px solid var(--border);
+}
+.threshold-table td {
+  padding: 10px 14px; font-size: 0.74rem;
+  border-bottom: 1px solid var(--border);
+}
+.threshold-table tr:last-child td { border-bottom: none; }
+.threshold-table td:first-child { font-family: var(--mono); color: var(--ink); font-weight: 500; }
+
+@media (max-width: 900px) {
+  .engine-layout { grid-template-columns: 1fr; }
+  .dashboard-layout { grid-template-columns: 1fr; }
+  .engine-col:not(:first-child) { display: none; }
+  .summary-row { grid-template-columns: repeat(2,1fr); }
+  .ac-body { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="brand-logo">eN</div>
+    <div>
+      <div class="brand-name">e-Nabız <span>Alert Layer</span></div>
+      <div class="brand-sub">PROTOTYPE · SIMULATED DATA · NOT CONNECTED TO LIVE e-NABIZ API</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-status"><div class="status-pulse"></div>Engine Running</div>
+    <div class="proto-badge">Proof of Concept</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('engine',this)">
+    <div class="tab-dot"></div>Alert Engine
+  </div>
+  <div class="tab" onclick="switchTab('dashboard',this)">
+    <div class="tab-dot"></div>HCP Dashboard
+  </div>
+  <div class="tab" onclick="switchTab('api',this)">
+    <div class="tab-dot"></div>API Specification
+  </div>
+</div>
+
+<div class="app">
+
+<!-- ══ TAB 1: ALERT ENGINE ══ -->
+<div class="panel active" id="panel-engine">
+  <div class="engine-layout" style="flex:1;overflow:hidden">
+
+    <!-- Col 1: Patient list -->
+    <div class="engine-col">
+      <div class="col-header">
+        Monitored Patients
+        <span class="col-header-badge">14 active</span>
+      </div>
+      <div id="patient-list"></div>
+    </div>
+
+    <!-- Col 2: BP chart + algorithm -->
+    <div class="engine-col" style="border-right:1px solid var(--border)">
+      <div class="col-header">
+        BP Trend & Alert Logic
+        <span class="col-header-badge" id="selected-patient-label">Select patient</span>
+      </div>
+      <div class="chart-area" id="chart-area">
+        <div style="color:var(--muted);font-size:0.78rem;padding:40px 0;text-align:center;font-family:var(--mono)">
+          ← Select a patient to view BP trend
+        </div>
+      </div>
+    </div>
+
+    <!-- Col 3: Alert queue -->
+    <div class="engine-col">
+      <div class="col-header">
+        Alert Queue
+        <span class="col-header-badge" id="alert-count-badge">0 active</span>
+      </div>
+      <div id="alert-queue"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ TAB 2: HCP DASHBOARD ══ -->
+<div class="panel" id="panel-dashboard">
+  <div class="dashboard-layout" style="flex:1">
+
+    <!-- Sidebar -->
+    <div class="dash-sidebar">
+      <div class="dash-section">
+        <div class="dash-section-label">Dr. Ahmet Kaya</div>
+        <div class="dash-nav-item active">
+          <div class="dash-nav-icon">🔔</div>
+          <div class="dash-nav-text">Active Alerts</div>
+          <div class="dash-nav-badge" style="background:var(--red-l);color:var(--red);border:1px solid var(--red-b)">2</div>
+        </div>
+        <div class="dash-nav-item">
+          <div class="dash-nav-icon">👥</div>
+          <div class="dash-nav-text">All Patients</div>
+        </div>
+        <div class="dash-nav-item">
+          <div class="dash-nav-icon">📊</div>
+          <div class="dash-nav-text">BP Trends</div>
+        </div>
+        <div class="dash-nav-item">
+          <div class="dash-nav-icon">📅</div>
+          <div class="dash-nav-text">Appointments</div>
+          <div class="dash-nav-badge" style="background:var(--amber-l);color:var(--amber);border:1px solid var(--amber-b)">3</div>
+        </div>
+      </div>
+      <div class="dash-section">
+        <div class="dash-section-label">Quick Stats</div>
+        <div style="padding:8px 0">
+          <div style="display:flex;justify-content:space-between;padding:5px 0;font-family:var(--mono);font-size:0.65rem;border-bottom:1px solid var(--border);color:var(--mid)">
+            <span>Patients monitored</span><span style="color:var(--ink)">14</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;font-family:var(--mono);font-size:0.65rem;border-bottom:1px solid var(--border);color:var(--mid)">
+            <span>Avg BP control</span><span style="color:var(--green)">68%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;font-family:var(--mono);font-size:0.65rem;border-bottom:1px solid var(--border);color:var(--mid)">
+            <span>Alerts this week</span><span style="color:var(--red)">4</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;font-family:var(--mono);font-size:0.65rem;color:var(--mid)">
+            <span>Avg adherence</span><span style="color:var(--amber)">74%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="dash-main">
+      <div class="summary-row">
+        <div class="summary-stat">
+          <div class="ss-num" style="color:var(--red)">2</div>
+          <div class="ss-label">Critical Alerts</div>
+        </div>
+        <div class="summary-stat">
+          <div class="ss-num" style="color:var(--amber)">1</div>
+          <div class="ss-label">Warnings</div>
+        </div>
+        <div class="summary-stat">
+          <div class="ss-num" style="color:var(--green)">11</div>
+          <div class="ss-label">BP Controlled</div>
+        </div>
+        <div class="summary-stat">
+          <div class="ss-num" style="color:var(--blue)">14</div>
+          <div class="ss-label">Total Monitored</div>
+        </div>
+      </div>
+
+      <div style="font-family:var(--mono);font-size:0.6rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px">Active Alerts — Requires Action</div>
+
+      <!-- Alert 1: Critical -->
+      <div class="alert-card critical">
+        <div class="ac-header">
+          <div class="ac-patient-info">
+            <div class="ac-patient-name">Fatma Yıldız</div>
+            <div class="ac-patient-meta">TC: 123****789 · F · 62y · Registered GP: Dr. Kaya · Alert generated: 09:14 today</div>
+          </div>
+          <div class="ac-badge" style="background:var(--red-l);color:var(--red);border:1px solid var(--red-b)">CRITICAL</div>
+        </div>
+        <div class="ac-body">
+          <div class="ac-stat">
+            <div class="ac-stat-label">Latest BP</div>
+            <div class="ac-stat-val" style="color:var(--red)">178/104</div>
+            <div class="ac-stat-sub">mmHg · 07:23 today</div>
+          </div>
+          <div class="ac-stat">
+            <div class="ac-stat-label">7-Day Avg</div>
+            <div class="ac-stat-val" style="color:var(--red)">172/101</div>
+            <div class="ac-stat-sub">Systolic trend ↑</div>
+          </div>
+          <div class="ac-stat">
+            <div class="ac-stat-label">Alert Trigger</div>
+            <div class="ac-stat-val" style="color:var(--amber);font-size:0.78rem">Day 4</div>
+            <div class="ac-stat-sub">of consecutive elevation</div>
+          </div>
+        </div>
+        <div class="ac-trend">
+          <div class="ac-trend-title">14-Day BP Trend</div>
+          D1: 148/90 · D2: 152/92 · D3: 158/96 · D4: 162/98 · D5: 165/99 · D6: 168/100 · D7: 172/101 · D8: 169/99 · D9: 174/102 · D10: 170/100 · D11: 175/103 · D12: 172/101 · D13: 176/104 · <span style="color:var(--red)">D14: 178/104 ← TODAY</span>
+        </div>
+        <div style="font-family:var(--mono);font-size:0.58rem;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Current Medications (from e-prescription database)</div>
+        <div class="ac-medications">
+          <div class="ac-med-row"><div class="ac-med-name">Amlodipine</div><div class="ac-med-dose">5mg · once daily · prescribed 3 months ago</div></div>
+          <div class="ac-med-row"><div class="ac-med-name">Ramipril</div><div class="ac-med-dose">5mg · once daily · prescribed 3 months ago</div></div>
+          <div class="ac-med-row"><div class="ac-med-name">Hydrochlorothiazide</div><div class="ac-med-dose">12.5mg · once daily · prescribed 6 weeks ago</div></div>
+        </div>
+        <div class="ac-actions">
+          <button class="ac-btn primary" onclick="markAction('teleconsult','Fatma Yıldız')">📹 Schedule Teleconsult</button>
+          <button class="ac-btn danger" onclick="markAction('urgent','Fatma Yıldız')">🚨 Flag Urgent In-Person</button>
+          <button class="ac-btn secondary" onclick="markAction('message','Fatma Yıldız')">💬 Send Medication Message</button>
+          <button class="ac-btn secondary" onclick="markAction('dismiss','Fatma Yıldız')">✓ Acknowledge</button>
+        </div>
+      </div>
+
+      <!-- Alert 2: Critical -->
+      <div class="alert-card critical">
+        <div class="ac-header">
+          <div class="ac-patient-info">
+            <div class="ac-patient-name">Mehmet Arslan</div>
+            <div class="ac-patient-meta">TC: 456****012 · M · 58y · Registered GP: Dr. Kaya · Alert generated: yesterday 18:40</div>
+          </div>
+          <div class="ac-badge" style="background:var(--red-l);color:var(--red);border:1px solid var(--red-b)">CRITICAL</div>
+        </div>
+        <div class="ac-body">
+          <div class="ac-stat">
+            <div class="ac-stat-label">Latest BP</div>
+            <div class="ac-stat-val" style="color:var(--red)">165/98</div>
+            <div class="ac-stat-sub">mmHg · yesterday 18:20</div>
+          </div>
+          <div class="ac-stat">
+            <div class="ac-stat-label">7-Day Avg</div>
+            <div class="ac-stat-val" style="color:var(--amber)">162/96</div>
+            <div class="ac-stat-sub">Systolic stable-high</div>
+          </div>
+          <div class="ac-stat">
+            <div class="ac-stat-label">Alert Trigger</div>
+            <div class="ac-stat-val" style="color:var(--red);font-size:0.78rem">Day 5</div>
+            <div class="ac-stat-sub">of consecutive elevation</div>
+          </div>
+        </div>
+        <div class="ac-trend">
+          <div class="ac-trend-title">14-Day BP Trend</div>
+          D1: 138/85 · D2: 140/86 · D3: 145/88 · D4: 150/90 · D5: 155/93 · D6: 158/94 · D7: 160/95 · D8: 158/94 · D9: 162/96 · D10: 163/96 · D11: 165/97 · D12: 163/96 · D13: 164/97 · <span style="color:var(--red)">D14: 165/98 ← TODAY</span>
+        </div>
+        <div style="font-family:var(--mono);font-size:0.58rem;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Current Medications</div>
+        <div class="ac-medications">
+          <div class="ac-med-row"><div class="ac-med-name">Losartan</div><div class="ac-med-dose">50mg · once daily · prescribed 2 months ago</div></div>
+          <div class="ac-med-row"><div class="ac-med-name">Indapamide</div><div class="ac-med-dose">1.5mg SR · once daily · prescribed 2 months ago</div></div>
+        </div>
+        <div class="ac-actions">
+          <button class="ac-btn primary" onclick="markAction('teleconsult','Mehmet Arslan')">📹 Schedule Teleconsult</button>
+          <button class="ac-btn secondary" onclick="markAction('titrate','Mehmet Arslan')">💊 Review Titration</button>
+          <button class="ac-btn secondary" onclick="markAction('dismiss','Mehmet Arslan')">✓ Acknowledge</button>
+        </div>
+      </div>
+
+      <!-- Alert 3: Warning -->
+      <div class="alert-card warning">
+        <div class="ac-header">
+          <div class="ac-patient-info">
+            <div class="ac-patient-name">Ayşe Demir</div>
+            <div class="ac-patient-meta">TC: 789****345 · F · 47y · Registered GP: Dr. Kaya · Alert generated: 2 days ago</div>
+          </div>
+          <div class="ac-badge" style="background:var(--amber-l);color:var(--amber);border:1px solid var(--amber-b)">WARNING</div>
+        </div>
+        <div class="ac-body">
+          <div class="ac-stat">
+            <div class="ac-stat-label">Latest BP</div>
+            <div class="ac-stat-val" style="color:var(--amber)">152/94</div>
+            <div class="ac-stat-sub">mmHg · 2 days ago</div>
+          </div>
+          <div class="ac-stat">
+            <div class="ac-stat-label">7-Day Avg</div>
+            <div class="ac-stat-val" style="color:var(--amber)">151/93</div>
+            <div class="ac-stat-sub">Borderline elevated</div>
+          </div>
+          <div class="ac-stat">
+            <div class="ac-stat-label">Alert Trigger</div>
+            <div class="ac-stat-val" style="color:var(--amber);font-size:0.78rem">3 days</div>
+            <div class="ac-stat-sub">above warning threshold</div>
+          </div>
+        </div>
+        <div class="ac-actions">
+          <button class="ac-btn secondary" onclick="markAction('monitor','Ayşe Demir')">👁 Continue Monitoring</button>
+          <button class="ac-btn secondary" onclick="markAction('message','Ayşe Demir')">💬 Send Lifestyle Message</button>
+          <button class="ac-btn secondary" onclick="markAction('dismiss','Ayşe Demir')">✓ Acknowledge</button>
+        </div>
+      </div>
+
+      <div id="action-log" style="display:none;background:var(--bg3);border:1px solid var(--green-b);border-radius:6px;padding:14px 16px;margin-top:14px;font-family:var(--mono);font-size:0.72rem;color:var(--green)"></div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 3: API SPEC ══ -->
+<div class="panel" id="panel-api">
+  <div class="api-layout">
+
+    <div class="api-intro">
+      <div class="api-intro-title">e-Nabız Clinical Alert Layer — API Specification v1.0</div>
+      <div class="api-intro-body">
+        This document specifies the API design for the e-Nabız Clinical Alert Layer — a proposed integration between Turkey's national personal health record platform (e-Nabız), the MHRS appointment system, and family physician practice management systems (PVS). <strong>This is a design specification, not a live API.</strong> All endpoints are proposed additions to the existing e-Nabız infrastructure. Base URL would be: <code style="font-family:var(--mono);color:var(--teal);background:var(--bg4);padding:1px 5px;border-radius:2px">https://api.enabiz.gov.tr/v2/clinical-alerts</code>
+      </div>
+    </div>
+
+    <!-- Alert Thresholds -->
+    <div class="api-section-title">01 · Alert Threshold Configuration</div>
+    <table class="threshold-table">
+      <thead>
+        <tr>
+          <th>Alert Level</th>
+          <th>Systolic Threshold</th>
+          <th>Diastolic Threshold</th>
+          <th>Consecutive Days</th>
+          <th>Action Triggered</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--amber)">WARNING</td>
+          <td style="font-family:var(--mono)">≥ 150 mmHg</td>
+          <td style="font-family:var(--mono)">≥ 90 mmHg</td>
+          <td style="font-family:var(--mono)">3 days</td>
+          <td style="color:var(--mid)">KIM message to GP — monitoring flag</td>
+        </tr>
+        <tr>
+          <td style="color:var(--red)">CRITICAL</td>
+          <td style="font-family:var(--mono)">≥ 160 mmHg</td>
+          <td style="font-family:var(--mono)">≥ 95 mmHg</td>
+          <td style="font-family:var(--mono)">3 days</td>
+          <td style="color:var(--mid)">KIM alert + MHRS slot suggestion + GP notification</td>
+        </tr>
+        <tr>
+          <td style="color:var(--red)">HYPERTENSIVE URGENCY</td>
+          <td style="font-family:var(--mono)">≥ 180 mmHg</td>
+          <td style="font-family:var(--mono)">≥ 110 mmHg</td>
+          <td style="font-family:var(--mono)">1 reading</td>
+          <td style="color:var(--mid)">Immediate GP alert + patient call prompt + emergency escalation path</td>
+        </tr>
+        <tr>
+          <td style="color:var(--green)">CONTROLLED</td>
+          <td style="font-family:var(--mono)">&lt; 140 mmHg</td>
+          <td style="font-family:var(--mono)">&lt; 90 mmHg</td>
+          <td style="font-family:var(--mono)">—</td>
+          <td style="color:var(--mid)">Weekly summary to GP. No action required.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Webhook Flow -->
+    <div class="api-section-title">02 · Alert Flow Architecture</div>
+    <div class="webhook-flow">
+      <div class="wf-step">
+        <div class="wf-box" style="background:var(--blue-l);border-color:var(--blue-b);color:var(--blue)">Patient<br>uploads BP</div>
+        <div class="wf-label">e-Nabız app<br>or wearable</div>
+      </div>
+      <div class="wf-arrow">→<br><span class="wf-arrow-label">HTTPS POST</span></div>
+      <div class="wf-step">
+        <div class="wf-box" style="background:var(--teal-l);border-color:rgba(42,176,170,0.3);color:var(--teal)">Alert<br>Engine</div>
+        <div class="wf-label">Threshold<br>evaluation</div>
+      </div>
+      <div class="wf-arrow">→<br><span class="wf-arrow-label">if triggered</span></div>
+      <div class="wf-step">
+        <div class="wf-box" style="background:var(--purple-l);border-color:rgba(138,106,212,0.3);color:var(--purple)">Alert<br>Generated</div>
+        <div class="wf-label">Stored +<br>queued</div>
+      </div>
+      <div class="wf-arrow">→<br><span class="wf-arrow-label">webhook</span></div>
+      <div class="wf-step">
+        <div class="wf-box" style="background:var(--green-l);border-color:var(--green-b);color:var(--green)">KIM<br>Message</div>
+        <div class="wf-label">GP notified<br>via PVS</div>
+      </div>
+      <div class="wf-arrow">→<br><span class="wf-arrow-label">optional</span></div>
+      <div class="wf-step">
+        <div class="wf-box" style="background:var(--amber-l);border-color:var(--amber-b);color:var(--amber)">MHRS<br>Slot</div>
+        <div class="wf-label">Teleconsult<br>suggested</div>
+      </div>
+      <div class="wf-arrow">→<br><span class="wf-arrow-label">GP action</span></div>
+      <div class="wf-step">
+        <div class="wf-box" style="background:var(--blue-l);border-color:var(--blue-b);color:var(--blue)">GP<br>Response</div>
+        <div class="wf-label">Logged +<br>patient notified</div>
+      </div>
+    </div>
+
+    <!-- Endpoints -->
+    <div class="api-section-title">03 · API Endpoints</div>
+
+    <!-- POST /readings -->
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <div class="method-badge post">POST</div>
+        <div class="endpoint-path">/readings</div>
+        <div class="endpoint-desc">Submit a new BP reading for a registered patient</div>
+      </div>
+      <div class="endpoint-body">
+        <table class="param-table">
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>tc_id <span class="required-tag">required</span></td><td>string</td><td>Patient Turkish ID (hashed — PII not stored in plaintext)</td></tr>
+            <tr><td>systolic <span class="required-tag">required</span></td><td>integer</td><td>Systolic BP in mmHg (60–300 valid range)</td></tr>
+            <tr><td>diastolic <span class="required-tag">required</span></td><td>integer</td><td>Diastolic BP in mmHg (40–200 valid range)</td></tr>
+            <tr><td>pulse</td><td>integer</td><td>Heart rate in bpm (optional)</td></tr>
+            <tr><td>measured_at <span class="required-tag">required</span></td><td>ISO 8601</td><td>Timestamp of measurement</td></tr>
+            <tr><td>device_id</td><td>string</td><td>USBS-registered device identifier (optional)</td></tr>
+            <tr><td>source</td><td>enum</td><td>manual | wearable | pharmacy_kiosk</td></tr>
+          </tbody>
+        </table>
+        <div class="code-block"><span class="c">// Request body example</span>
+{
+  <span class="p">"tc_id"</span>: <span class="s">"hashed_patient_id_abc123"</span>,
+  <span class="p">"systolic"</span>: <span class="n">178</span>,
+  <span class="p">"diastolic"</span>: <span class="n">104</span>,
+  <span class="p">"pulse"</span>: <span class="n">82</span>,
+  <span class="p">"measured_at"</span>: <span class="s">"2026-06-07T07:23:00+03:00"</span>,
+  <span class="p">"source"</span>: <span class="s">"manual"</span>
+}
+
+<span class="c">// Response — alert triggered</span>
+{
+  <span class="p">"reading_id"</span>: <span class="s">"rdg_20260607_0723_abc"</span>,
+  <span class="p">"status"</span>: <span class="s">"recorded"</span>,
+  <span class="p">"alert_triggered"</span>: <span class="k">true</span>,
+  <span class="p">"alert_level"</span>: <span class="s">"CRITICAL"</span>,
+  <span class="p">"alert_id"</span>: <span class="s">"alt_20260607_001"</span>,
+  <span class="p">"gp_notified"</span>: <span class="k">true</span>,
+  <span class="p">"notification_channel"</span>: <span class="s">"KIM"</span>
+}</div>
+      </div>
+    </div>
+
+    <!-- GET /alerts -->
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <div class="method-badge get">GET</div>
+        <div class="endpoint-path">/alerts</div>
+        <div class="endpoint-desc">Retrieve active alerts for a registered GP's patient panel</div>
+      </div>
+      <div class="endpoint-body">
+        <table class="param-table">
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>gp_id <span class="required-tag">required</span></td><td>string</td><td>GP registration number (MoH licensed HCP)</td></tr>
+            <tr><td>status</td><td>enum</td><td>active | acknowledged | resolved | all (default: active)</td></tr>
+            <tr><td>level</td><td>enum</td><td>WARNING | CRITICAL | URGENCY (default: all)</td></tr>
+            <tr><td>from_date</td><td>ISO 8601</td><td>Filter alerts from date</td></tr>
+            <tr><td>limit</td><td>integer</td><td>Max results (default: 20, max: 100)</td></tr>
+          </tbody>
+        </table>
+        <div class="code-block"><span class="c">// Response</span>
+{
+  <span class="p">"alerts"</span>: [
+    {
+      <span class="p">"alert_id"</span>: <span class="s">"alt_20260607_001"</span>,
+      <span class="p">"patient_name"</span>: <span class="s">"Fatma Y."</span>,
+      <span class="p">"patient_age"</span>: <span class="n">62</span>,
+      <span class="p">"level"</span>: <span class="s">"CRITICAL"</span>,
+      <span class="p">"latest_bp"</span>: { <span class="p">"systolic"</span>: <span class="n">178</span>, <span class="p">"diastolic"</span>: <span class="n">104</span> },
+      <span class="p">"7day_avg"</span>: { <span class="p">"systolic"</span>: <span class="n">172</span>, <span class="p">"diastolic"</span>: <span class="n">101</span> },
+      <span class="p">"consecutive_days_elevated"</span>: <span class="n">4</span>,
+      <span class="p">"medications"</span>: [<span class="s">"Amlodipine 5mg"</span>, <span class="s">"Ramipril 5mg"</span>, <span class="s">"HCTZ 12.5mg"</span>],
+      <span class="p">"created_at"</span>: <span class="s">"2026-06-07T09:14:00+03:00"</span>,
+      <span class="p">"status"</span>: <span class="s">"active"</span>,
+      <span class="p">"suggested_action"</span>: <span class="s">"teleconsult_or_in_person"</span>
+    }
+  ],
+  <span class="p">"total"</span>: <span class="n">2</span>,
+  <span class="p">"generated_at"</span>: <span class="s">"2026-06-07T10:00:00+03:00"</span>
+}</div>
+      </div>
+    </div>
+
+    <!-- POST /alerts/:id/respond -->
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <div class="method-badge post">POST</div>
+        <div class="endpoint-path">/alerts/{alert_id}/respond</div>
+        <div class="endpoint-desc">Log GP response to an alert — triggers patient notification and MHRS action</div>
+      </div>
+      <div class="endpoint-body">
+        <table class="param-table">
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>action <span class="required-tag">required</span></td><td>enum</td><td>schedule_teleconsult | schedule_in_person | send_message | acknowledge | escalate_emergency</td></tr>
+            <tr><td>gp_note</td><td>string</td><td>Clinical note (stored in patient PVS record)</td></tr>
+            <tr><td>appointment_slot</td><td>ISO 8601</td><td>Proposed appointment time (if scheduling)</td></tr>
+            <tr><td>message_to_patient</td><td>string</td><td>Plain-language message sent to patient via e-Nabız notification</td></tr>
+          </tbody>
+        </table>
+        <div class="code-block"><span class="c">// Request — GP schedules teleconsult</span>
+{
+  <span class="p">"action"</span>: <span class="s">"schedule_teleconsult"</span>,
+  <span class="p">"appointment_slot"</span>: <span class="s">"2026-06-08T10:00:00+03:00"</span>,
+  <span class="p">"message_to_patient"</span>: <span class="s">"Kan basıncı değerleriniz yüksek seyretti. Yarın saat 10:00'da video görüşmesi planladım."</span>,
+  <span class="p">"gp_note"</span>: <span class="s">"BP elevated for 4 consecutive days. Scheduling video review. Consider titration."</span>
+}
+
+<span class="c">// Response</span>
+{
+  <span class="p">"alert_id"</span>: <span class="s">"alt_20260607_001"</span>,
+  <span class="p">"status"</span>: <span class="s">"acknowledged"</span>,
+  <span class="p">"mhrs_appointment_id"</span>: <span class="s">"mhrs_20260608_1000_abc"</span>,
+  <span class="p">"patient_notified"</span>: <span class="k">true</span>,
+  <span class="p">"pvs_note_saved"</span>: <span class="k">true</span>
+}</div>
+      </div>
+    </div>
+
+    <!-- GET /patients/:id/trend -->
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <div class="method-badge get">GET</div>
+        <div class="endpoint-path">/patients/{tc_id}/trend</div>
+        <div class="endpoint-desc">Retrieve BP trend data for a specific patient — used in HCP dashboard chart view</div>
+      </div>
+      <div class="endpoint-body">
+        <table class="param-table">
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>days</td><td>integer</td><td>Number of days to retrieve (default: 14, max: 90)</td></tr>
+            <tr><td>include_medications</td><td>boolean</td><td>Include current medications from e-prescription DB (default: true)</td></tr>
+            <tr><td>include_alerts</td><td>boolean</td><td>Include alert history overlay (default: true)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Security -->
+    <div class="api-section-title">04 · Security & Compliance</div>
+    <div class="code-block"><span class="c">// Authentication — OAuth 2.0 with MoH identity provider</span>
+<span class="k">Authorization</span>: Bearer {moh_issued_jwt_token}
+
+<span class="c">// All tokens are:</span>
+<span class="c">// - Issued by MoH identity server</span>
+<span class="c">// - Scoped to specific GP registration number</span>
+<span class="c">// - Valid for 8 hours (refresh via /auth/refresh)</span>
+<span class="c">// - Logged for KVKK audit trail</span>
+
+<span class="c">// Data handling:</span>
+<span class="c">// - TC identity numbers hashed (SHA-256) before storage</span>
+<span class="c">// - All health data encrypted at rest (AES-256)</span>
+<span class="c">// - All API calls over TLS 1.3</span>
+<span class="c">// - KVKK Article 6 compliant — health data processing</span>
+<span class="c">// - Patient consent required before GP data sharing (stored in e-Nabız consent record)</span>
+<span class="c">// - Full audit log retained for 10 years per MoH data retention rules</span></div>
+
+    <div style="margin-top:24px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:18px 20px;">
+      <div style="font-family:var(--mono);font-size:0.62rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">About This Specification</div>
+      <p style="font-size:0.76rem;color:var(--mid);line-height:1.7">This API specification is a portfolio design artefact produced by Nada Abdelhalim as part of the Turkey Virtual Care Readiness project. It demonstrates how the e-Nabız Clinical Alert Layer innovation proposal could be technically implemented within Turkey's existing digital health regulatory framework (KVKK, USBS, MoH licensing requirements). It is not connected to the live e-Nabız system, which is operated by the Turkish Ministry of Health and requires institutional authorisation for API access. All patient data shown in the prototype is entirely simulated.</p>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+// ── PATIENT DATA ──
+const PATIENTS = [
+  { id:'p1', name:'Fatma Yıldız', age:62, sex:'F', color:'#d44040',
+    readings:[148,152,158,162,165,168,172,169,174,170,175,172,176,178],
+    diastolic:[90,92,96,98,99,100,101,99,102,100,103,101,104,104],
+    meds:['Amlodipine 5mg','Ramipril 5mg','HCTZ 12.5mg'], status:'critical' },
+  { id:'p2', name:'Mehmet Arslan', age:58, sex:'M', color:'#d47030',
+    readings:[138,140,145,150,155,158,160,158,162,163,165,163,164,165],
+    diastolic:[85,86,88,90,93,94,95,94,96,96,97,96,97,98],
+    meds:['Losartan 50mg','Indapamide 1.5mg SR'], status:'critical' },
+  { id:'p3', name:'Ayşe Demir', age:47, sex:'F', color:'#d4a030',
+    readings:[142,145,148,150,152,149,151,150,153,151,152,150,151,152],
+    diastolic:[88,89,91,93,94,92,93,92,94,93,94,92,93,94],
+    meds:['Nebivolol 5mg'], status:'warning' },
+  { id:'p4', name:'Ali Kaya', age:54, sex:'M', color:'#2aaa6a',
+    readings:[132,135,130,128,133,131,129,132,130,128,131,129,130,128],
+    diastolic:[82,84,81,80,83,82,80,81,80,79,81,80,80,79],
+    meds:['Perindopril 4mg','Amlodipine 5mg'], status:'controlled' },
+  { id:'p5', name:'Zeynep Yılmaz', age:65, sex:'F', color:'#2aaa6a',
+    readings:[125,128,124,127,126,125,128,126,124,127,125,126,124,125],
+    diastolic:[78,80,77,79,78,77,79,78,76,78,77,78,76,77],
+    meds:['Ramipril 10mg'], status:'controlled' },
+  { id:'p6', name:'Hasan Çelik', age:51, sex:'M', color:'#3a90d4',
+    readings:[138,136,140,138,137,139,138,136,140,138,137,139,138,136],
+    diastolic:[86,85,87,86,85,87,86,85,87,86,85,87,86,85],
+    meds:['Amlodipine 5mg'], status:'borderline' },
+];
+
+let selectedPatient = null;
+const alertQueue = [];
+
+// ── RENDER PATIENT LIST ──
+function renderPatientList() {
+  const container = document.getElementById('patient-list');
+  container.innerHTML = PATIENTS.map(p => {
+    const latest = p.readings[p.readings.length-1];
+    const latestD = p.diastolic[p.diastolic.length-1];
+    const bpColor = p.status === 'critical' ? 'var(--red)' : p.status === 'warning' ? 'var(--amber)' : 'var(--green)';
+    return `<div class="patient-item ${p.status === 'critical' || p.status === 'warning' ? 'alert' : ''} ${selectedPatient === p.id ? 'selected' : ''}"
+      onclick="selectPatient('${p.id}')">
+      <div class="p-avatar" style="background:${p.color}">${p.name.split(' ').map(n=>n[0]).join('')}</div>
+      <div class="p-info">
+        <div class="p-name">${p.name}</div>
+        <div class="p-detail">${p.sex} · ${p.age}y · ${p.meds[0]}</div>
+      </div>
+      <div class="p-bp" style="color:${bpColor}">${latest}/${latestD}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── SELECT PATIENT ──
+function selectPatient(id) {
+  selectedPatient = id;
+  const p = PATIENTS.find(pt=>pt.id===id);
+  document.getElementById('selected-patient-label').textContent = p.name;
+  renderPatientList();
+  renderChart(p);
+}
+
+// ── RENDER CHART ──
+function renderChart(p) {
+  const latest = p.readings[p.readings.length-1];
+  const latestD = p.diastolic[p.diastolic.length-1];
+  const maxVal = Math.max(...p.readings) + 20;
+  const minVal = 80;
+  const range = maxVal - minVal;
+
+  const days = ['D1','D2','D3','D4','D5','D6','D7','D8','D9','D10','D11','D12','D13','D14'];
+  const alertLevel = p.status === 'critical' ? 'CRITICAL' : p.status === 'warning' ? 'WARNING' : 'CONTROLLED';
+  const alertColor = p.status === 'critical' ? 'var(--red)' : p.status === 'warning' ? 'var(--amber)' : 'var(--green)';
+  const alertBg = p.status === 'critical' ? 'var(--red-l)' : p.status === 'warning' ? 'var(--amber-l)' : 'var(--green-l)';
+  const alertBorder = p.status === 'critical' ? 'var(--red-b)' : p.status === 'warning' ? 'var(--amber-b)' : 'var(--green-b)';
+
+  const barsHTML = p.readings.map((s,i) => {
+    const sHeight = Math.round(((s - minVal) / range) * 100);
+    const dHeight = Math.round(((p.diastolic[i] - minVal) / range) * 100);
+    const isAlert = s >= 160;
+    return `<div class="bp-day-col">
+      <div class="bp-bars">
+        <div class="bp-bar systolic ${isAlert?'':''}\" style="height:${sHeight}px;${isAlert?'opacity:1':''}"></div>
+        <div class="bp-bar diastolic" style="height:${dHeight}px"></div>
+      </div>
+      <div class="bp-day-label">${days[i]||''}</div>
+      <div class="bp-day-val">${s}/${p.diastolic[i]}</div>
+    </div>`;
+  }).join('');
+
+  // Calculate threshold positions
+  const t160 = Math.round(((160 - minVal) / range) * 100);
+  const t140 = Math.round(((140 - minVal) / range) * 100);
+
+  const consec = p.readings.filter((r,i) => i >= p.readings.length-4 && r >= 150).length;
+
+  const algoLog = generateLog(p);
+
+  document.getElementById('chart-area').innerHTML = `
+    <div class="chart-header">
+      <div class="chart-patient-name">${p.name} · ${p.sex} · ${p.age}y</div>
+      <div class="chart-meta">Medications: ${p.meds.join(' · ')} &nbsp;|&nbsp; Latest: ${latest}/${latestD} mmHg</div>
+    </div>
+
+    <div class="bp-chart-wrap">
+      <div class="bp-chart-title">14-Day BP Trend (mmHg)</div>
+      <div class="bp-chart" style="position:relative">
+        <div class="threshold-line" style="bottom:${t160}px;border-color:rgba(212,64,64,0.4)">
+          <div class="threshold-label" style="background:var(--red-l);color:var(--red);border:1px solid var(--red-b)">160</div>
+        </div>
+        <div class="threshold-line" style="bottom:${t140}px;border-color:rgba(212,160,48,0.4)">
+          <div class="threshold-label" style="background:var(--amber-l);color:var(--amber);border:1px solid var(--amber-b)">140</div>
+        </div>
+        ${barsHTML}
+      </div>
+      <div class="bp-legend">
+        <div class="bp-legend-item"><div class="bp-legend-dot" style="background:var(--red)"></div>Systolic</div>
+        <div class="bp-legend-item"><div class="bp-legend-dot" style="background:var(--blue)"></div>Diastolic</div>
+      </div>
+    </div>
+
+    <div class="alert-status-box" style="background:${alertBg};border-color:${alertBorder}">
+      <div class="alert-status-header">
+        <div class="alert-status-icon">${p.status==='critical'?'🔴':p.status==='warning'?'🟡':'🟢'}</div>
+        <div class="alert-status-title" style="color:${alertColor}">Alert Status: ${alertLevel}</div>
+      </div>
+      <div class="alert-status-body">
+        ${p.status === 'controlled'
+          ? 'BP within target range. No alert triggered. Weekly summary scheduled for GP.'
+          : `Threshold exceeded for <strong>${consec} consecutive days</strong>. Alert generated and sent to registered GP via KIM message.`}
+      </div>
+      ${p.status !== 'controlled' ? `
+      <button class="alert-trigger-btn" style="background:${alertColor};color:#fff"
+        onclick="triggerAlert('${p.id}')">
+        ▶ Simulate Alert → Send to HCP Dashboard
+      </button>` : ''}
+    </div>
+
+    <div class="bp-chart-title" style="margin-bottom:6px">Algorithm Log</div>
+    <div class="algo-log">${algoLog}</div>
+  `;
+}
+
+function generateLog(p) {
+  const now = new Date();
+  const fmt = (d) => d.toTimeString().slice(0,8);
+  const t = (offset) => { const d=new Date(now-offset*1000); return fmt(d); };
+
+  const lines = [
+    `<div class="log-line"><span class="log-time">${t(45)}</span><span class="log-level info">[INFO]</span><span class="log-msg">Reading received · patient_id: ${p.id} · source: manual</span></div>`,
+    `<div class="log-line"><span class="log-time">${t(44)}</span><span class="log-level info">[INFO]</span><span class="log-msg">Validating reading range · SBP: ${p.readings[13]} · DBP: ${p.diastolic[13]}</span></div>`,
+    `<div class="log-line"><span class="log-time">${t(43)}</span><span class="log-level info">[INFO]</span><span class="log-msg">Fetching 14-day history from e-Nabız datastore</span></div>`,
+    `<div class="log-line"><span class="log-time">${t(42)}</span><span class="log-level info">[INFO]</span><span class="log-msg">Evaluating WARNING threshold (SBP ≥ 150 for ≥ 3 days)</span></div>`,
+  ];
+
+  if (p.status === 'critical') {
+    lines.push(`<div class="log-line"><span class="log-time">${t(41)}</span><span class="log-level warn">[WARN]</span><span class="log-msg">WARNING threshold breached · consecutive_days: 4</span></div>`);
+    lines.push(`<div class="log-line"><span class="log-time">${t(40)}</span><span class="log-level alert">[ALERT]</span><span class="log-msg">CRITICAL threshold evaluation · SBP ≥ 160 · TRIGGERED</span></div>`);
+    lines.push(`<div class="log-line"><span class="log-time">${t(39)}</span><span class="log-level alert">[ALERT]</span><span class="log-msg">Fetching GP ID from patient registration · gp_id: dr_kaya_001</span></div>`);
+    lines.push(`<div class="log-line"><span class="log-time">${t(38)}</span><span class="log-level alert">[ALERT]</span><span class="log-msg">Fetching e-prescription data · medications: ${p.meds.length} active</span></div>`);
+    lines.push(`<div class="log-line"><span class="log-time">${t(37)}</span><span class="log-level alert">[ALERT]</span><span class="log-msg">Generating 14-day trend summary for KIM message</span></div>`);
+    lines.push(`<div class="log-line"><span class="log-time">${t(36)}</span><span class="log-level ok">[OK]</span><span class="log-msg">KIM message dispatched · gp_notified: true · delivery: confirmed</span></div>`);
+    lines.push(`<div class="log-line"><span class="log-time">${t(35)}</span><span class="log-level ok">[OK]</span><span class="log-msg">Alert logged · alert_id: alt_${Date.now()} · status: active</span></div>`);
+  } else if (p.status === 'warning') {
+    lines.push(`<div class="log-line"><span class="log-time">${t(41)}</span><span class="log-level warn">[WARN]</span><span class="log-msg">WARNING threshold breached · consecutive_days: 3</span></div>`);
+    lines.push(`<div class="log-line"><span class="log-time">${t(40)}</span><span class="log-level info">[INFO]</span><span class="log-msg">CRITICAL threshold: NOT reached · SBP: ${p.readings[13]} < 160</span></div>`);
+    lines.push(`<div class="log-line"><span class="log-time">${t(39)}</span><span class="log-level warn">[WARN]</span><span class="log-msg">WARNING alert generated · KIM monitoring flag sent to GP</span></div>`);
+    lines.push(`<div class="log-line"><span class="log-time">${t(38)}</span><span class="log-level ok">[OK]</span><span class="log-msg">Alert logged · level: WARNING · status: active</span></div>`);
+  } else {
+    lines.push(`<div class="log-line"><span class="log-time">${t(41)}</span><span class="log-level ok">[OK]</span><span class="log-msg">WARNING threshold: NOT reached · SBP: ${p.readings[13]} < 150</span></div>`);
+    lines.push(`<div class="log-line"><span class="log-time">${t(40)}</span><span class="log-level ok">[OK]</span><span class="log-msg">CRITICAL threshold: NOT reached</span></div>`);
+    lines.push(`<div class="log-line"><span class="log-time">${t(39)}</span><span class="log-level ok">[OK]</span><span class="log-msg">BP CONTROLLED · no alert triggered · weekly summary queued</span></div>`);
+    lines.push(`<div class="log-line"><span class="log-time">${t(38)}</span><span class="log-level ok">[OK]</span><span class="log-msg">Reading recorded successfully · no action required</span></div>`);
+  }
+  return lines.join('');
+}
+
+// ── TRIGGER ALERT ──
+function triggerAlert(patientId) {
+  const p = PATIENTS.find(pt=>pt.id===patientId);
+  const alertItem = {
+    id: 'alt_' + Date.now(),
+    patient: p.name,
+    level: p.status === 'critical' ? 'critical' : 'warning',
+    bp: `${p.readings[13]}/${p.diastolic[13]}`,
+    time: new Date().toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'}),
+    meds: p.meds
+  };
+  alertQueue.unshift(alertItem);
+  renderAlertQueue();
+  // Update chart to show log
+  selectPatient(patientId);
+}
+
+function renderAlertQueue() {
+  const container = document.getElementById('alert-queue');
+  const badge = document.getElementById('alert-count-badge');
+  badge.textContent = alertQueue.length + ' active';
+
+  if (!alertQueue.length) {
+    container.innerHTML = `<div style="padding:24px 18px;text-align:center;font-family:var(--mono);font-size:0.68rem;color:var(--muted)">No active alerts<br>Select a patient and trigger an alert</div>`;
+    return;
+  }
+
+  container.innerHTML = alertQueue.map(a => `
+    <div class="alert-queue-item ${a.level}">
+      <div class="aq-header">
+        <div class="aq-patient">${a.patient}</div>
+        <div class="aq-time">${a.time}</div>
+      </div>
+      <div class="aq-body">BP: <strong style="color:${a.level==='critical'?'var(--red)':'var(--amber)'}">${a.bp} mmHg</strong> · ${a.meds[0]}</div>
+      <div><span class="aq-badge ${a.level}">${a.level.toUpperCase()}</span></div>
+    </div>`).join('');
+}
+
+// ── DASHBOARD ACTIONS ──
+function markAction(action, patient) {
+  const messages = {
+    teleconsult: `✓ Teleconsultation scheduled for ${patient}. MHRS slot booked. Patient notified via e-Nabız.`,
+    urgent: `🚨 ${patient} flagged for urgent in-person visit. Patient contacted by practice nurse.`,
+    message: `💬 Medication adjustment message sent to ${patient} via e-Nabız.`,
+    dismiss: `✓ Alert for ${patient} acknowledged and logged in PVS.`,
+    titrate: `💊 Medication titration review initiated for ${patient}.`,
+    monitor: `👁 ${patient} flagged for continued monitoring. Next review in 3 days.`
+  };
+  const log = document.getElementById('action-log');
+  log.style.display = 'block';
+  log.textContent = messages[action] || 'Action logged.';
+  setTimeout(() => { log.style.display = 'none'; }, 4000);
+}
+
+// ── TAB SWITCHING ──
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+}
+
+// ── INIT ──
+renderPatientList();
+renderAlertQueue();
+// Pre-select first patient
+selectPatient('p1');
+</script>
+</body>
+</html>
