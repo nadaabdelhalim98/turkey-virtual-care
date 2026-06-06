@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virtual Care Readiness: A Framework for Turkey</title>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #f7f5f0;
+  --bg2:      #eeebe4;
+  --bg3:      #e4e0d6;
+  --card:     #fdfcf9;
+  --border:   #d8d4c8;
+  --border2:  #c8c4b4;
+  --ink:      #1c1a14;
+  --mid:      #5c5848;
+  --muted:    #9c9888;
+
+  --red:      #c84840;   /* Turkey flag red */
+  --red-l:    #fdf0ef;
+  --red-m:    #e8b0ac;
+
+  --teal:     #2a7a7a;
+  --teal-l:   #e8f4f4;
+  --teal-m:   #90c8c8;
+
+  --amber:    #c08030;
+  --amber-l:  #fdf4e8;
+  --amber-m:  #e8c080;
+
+  --slate:    #3a5070;
+  --slate-l:  #eaf0f8;
+  --slate-m:  #90b0d0;
+
+  --green:    #3a7a4a;
+  --green-l:  #eaf4ec;
+
+  --serif:    'Spectral', Georgia, serif;
+  --sans:     'Barlow', sans-serif;
+  --cond:     'Barlow Condensed', sans-serif;
+  --r:        8px;
+  --shadow:   0 2px 12px rgba(28,26,20,0.07);
+  --shadow-lg:0 6px 28px rgba(28,26,20,0.11);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── COVER ── */
+.cover {
+  background: var(--ink);
+  min-height: 420px;
+  display: flex; flex-direction: column;
+  justify-content: flex-end;
+  padding: 60px;
+  position: relative;
+  overflow: hidden;
+}
+.cover-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 20%, rgba(200,72,64,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(42,122,122,0.12) 0%, transparent 50%);
+}
+/* Turkey crescent/star — abstract geometric suggestion */
+.cover-geo {
+  position: absolute;
+  right: 80px; top: 50%;
+  transform: translateY(-50%);
+  width: 200px; height: 200px;
+  border: 2px solid rgba(200,72,64,0.2);
+  border-radius: 50%;
+  opacity: 0.6;
+}
+.cover-geo::after {
+  content: '';
+  position: absolute;
+  top: 20px; left: 20px; right: 20px; bottom: 20px;
+  border: 1px solid rgba(200,72,64,0.15);
+  border-radius: 50%;
+}
+.cover-eyebrow {
+  font-family: var(--cond);
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--red); margin-bottom: 12px;
+  position: relative; z-index: 1;
+}
+.cover-title {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 300; line-height: 1.15;
+  color: #e8e4dc;
+  position: relative; z-index: 1;
+  margin-bottom: 8px;
+}
+.cover-title em { font-style: italic; color: rgba(200,72,64,0.9); }
+.cover-sub {
+  font-family: var(--cond); font-size: 1rem; font-weight: 500;
+  color: #707060; letter-spacing: 1px;
+  position: relative; z-index: 1; margin-bottom: 32px;
+}
+.cover-meta {
+  display: flex; gap: 32px; align-items: flex-end;
+  position: relative; z-index: 1;
+  padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08);
+  flex-wrap: wrap;
+}
+.cover-meta-item { }
+.cover-meta-label {
+  font-family: var(--cond); font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: #504840;
+  margin-bottom: 2px;
+}
+.cover-meta-val { font-size: 0.82rem; color: #9a9080; }
+
+/* ── NAV ── */
+.doc-nav {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px;
+  display: flex; gap: 0; overflow-x: auto;
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-item {
+  padding: 13px 18px;
+  font-family: var(--cond); font-size: 0.76rem; font-weight: 500;
+  letter-spacing: 0.5px; color: var(--muted); cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  white-space: nowrap; transition: all 0.15s; text-decoration: none;
+  display: block;
+}
+.nav-item:hover { color: var(--ink); }
+.nav-item.active { color: var(--red); border-bottom-color: var(--red); font-weight: 600; }
+
+/* ── MAIN ── */
+main { max-width: 1100px; margin: 0 auto; padding: 48px 48px 80px; }
+
+/* ── SHARED ── */
+.section-label {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 28px;
+}
+.section-num {
+  font-family: var(--cond); font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 2px; color: var(--red);
+}
+.section-name {
+  font-family: var(--cond); font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--muted);
+}
+.section-line { flex: 1; height: 1px; background: var(--border); }
+
+.section-heading {
+  font-family: var(--serif); font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 300; line-height: 1.2; color: var(--ink);
+  margin-bottom: 6px;
+}
+.section-heading em { font-style: italic; color: var(--red); }
+
+article { padding: 64px 0; border-bottom: 1px solid var(--border); }
+article:last-child { border-bottom: none; }
+
+/* ── EXECUTIVE SUMMARY ── */
+.exec-summary {
+  background: var(--ink);
+  border-radius: var(--r);
+  padding: 32px 36px;
+  margin-top: 28px;
+}
+.exec-summary p {
+  font-family: var(--serif); font-size: 1.05rem; font-weight: 300;
+  color: #c8c0b0; line-height: 1.8; margin-bottom: 14px;
+}
+.exec-summary p:last-child { margin-bottom: 0; }
+.exec-summary strong { color: #e8e4dc; font-weight: 400; }
+.exec-kpis {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0; margin-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 20px;
+}
+.exec-kpi { padding: 0 20px; border-right: 1px solid rgba(255,255,255,0.06); }
+.exec-kpi:first-child { padding-left: 0; }
+.exec-kpi:last-child { border-right: none; }
+.kpi-num {
+  font-family: var(--serif); font-size: 2rem; font-weight: 600;
+  color: var(--red); line-height: 1;
+}
+.kpi-label { font-family: var(--cond); font-size: 0.65rem; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase; color: #504840; margin-top: 4px; }
+
+/* ── 4-LENS FRAMEWORK ── */
+.lens-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 20px; margin-top: 28px;
+}
+.lens-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+}
+.lens-card:hover { box-shadow: var(--shadow-lg); }
+.lens-card-header {
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.lens-icon {
+  width: 36px; height: 36px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+.lens-label {
+  font-family: var(--cond); font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px;
+}
+.lens-title { font-size: 0.88rem; font-weight: 600; color: var(--ink); }
+.lens-body { padding: 18px 20px; }
+.lens-body p { font-size: 0.82rem; color: var(--mid); line-height: 1.7; margin-bottom: 10px; }
+.lens-body p:last-child { margin-bottom: 0; }
+.lens-body strong { color: var(--ink); font-weight: 600; }
+.lens-rating {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 0; margin-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.lens-rating-label { font-family: var(--cond); font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase; color: var(--muted); width: 70px; }
+.rating-dots { display: flex; gap: 4px; }
+.rating-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bg3); }
+.rating-dot.filled { }
+.lens-score { font-family: var(--cond); font-size: 0.72rem; font-weight: 600; }
+
+/* ── HYBRID CARE BLUEPRINT ── */
+.blueprint-problem {
+  background: var(--red-l);
+  border: 1px solid var(--red-m);
+  border-left: 4px solid var(--red);
+  border-radius: 0 var(--r) var(--r) 0;
+  padding: 20px 24px; margin: 24px 0;
+}
+.blueprint-problem h3 {
+  font-family: var(--cond); font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--red);
+  margin-bottom: 8px;
+}
+.blueprint-problem p { font-size: 0.82rem; color: var(--mid); line-height: 1.7; }
+.blueprint-problem strong { color: var(--ink); }
+
+/* continuous care diagram */
+.care-diagram {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 28px;
+  margin: 24px 0;
+  box-shadow: var(--shadow);
+}
+.care-diagram h3 {
+  font-family: var(--cond); font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+  margin-bottom: 20px;
+}
+.care-flow {
+  display: flex; align-items: center; gap: 0;
+  overflow-x: auto; padding-bottom: 4px;
+}
+.care-step {
+  display: flex; flex-direction: column; align-items: center;
+  flex-shrink: 0; width: 130px;
+}
+.care-step-box {
+  width: 100px; min-height: 80px;
+  border-radius: 8px; padding: 10px 10px;
+  text-align: center; border: 1.5px solid;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px;
+}
+.care-step-icon { font-size: 1.2rem; }
+.care-step-label { font-family: var(--cond); font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.5px; line-height: 1.3; }
+.care-step-sub { font-size: 0.58rem; color: var(--muted); margin-top: 4px;
+  text-align: center; line-height: 1.3; }
+.care-arrow {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 2px; min-width: 30px;
+}
+.care-arrow-line { width: 100%; height: 1.5px; background: var(--border2); }
+.care-arrow-label { font-size: 0.55rem; color: var(--muted); white-space: nowrap; }
+
+/* tech stack */
+.tech-cols {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 16px; margin: 24px 0;
+}
+.tech-col {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.tech-col-title {
+  font-family: var(--cond); font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+  margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.tech-item { display: flex; align-items: flex-start; gap: 7px;
+  padding: 5px 0; border-bottom: 1px solid rgba(216,212,200,0.4);
+  font-size: 0.75rem; color: var(--mid); line-height: 1.5;
+}
+.tech-item:last-child { border-bottom: none; }
+.tech-dot { width: 5px; height: 5px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 5px; }
+
+/* ROI table */
+.roi-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--card); border-radius: var(--r);
+  overflow: hidden; box-shadow: var(--shadow);
+  border: 1px solid var(--border); margin: 24px 0;
+}
+.roi-table thead tr { background: var(--ink); }
+.roi-table th {
+  padding: 11px 16px; text-align: left;
+  font-family: var(--cond); font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase; color: #8a8070;
+}
+.roi-table tbody tr { border-bottom: 1px solid var(--border); }
+.roi-table tbody tr:last-child { border-bottom: none; }
+.roi-table tbody tr:hover { background: var(--bg2); }
+.roi-table td { padding: 12px 16px; font-size: 0.78rem; vertical-align: top; }
+.roi-tag {
+  display: inline-block; font-family: var(--cond); font-size: 0.58rem; font-weight: 600;
+  letter-spacing: 0.8px; text-transform: uppercase; padding: 2px 7px;
+  border-radius: 3px; white-space: nowrap;
+}
+
+/* ── EVIDENCE SYNTHESIS ── */
+.evidence-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 16px; margin: 28px 0;
+}
+.evidence-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 18px 20px;
+  box-shadow: var(--shadow);
+  border-top: 3px solid var(--teal);
+}
+.evidence-num {
+  font-family: var(--serif); font-size: 2rem; font-weight: 600;
+  color: var(--border2); line-height: 1; margin-bottom: 8px;
+}
+.evidence-insight {
+  font-family: var(--serif); font-size: 0.88rem; font-weight: 400;
+  color: var(--ink); line-height: 1.5; margin-bottom: 8px;
+  font-style: italic;
+}
+.evidence-source {
+  font-family: var(--cond); font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase; color: var(--muted);
+}
+
+/* ── CLINICAL SCENARIOS ── */
+.scenario-tabs {
+  display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.scen-tab {
+  padding: 7px 16px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--card);
+  font-family: var(--cond); font-size: 0.72rem; font-weight: 500;
+  color: var(--mid); cursor: pointer; transition: all 0.15s;
+}
+.scen-tab:hover { border-color: var(--teal-m); color: var(--teal); }
+.scen-tab.active {
+  background: var(--teal-l); border-color: var(--teal-m);
+  color: var(--teal); font-weight: 600;
+}
+.scenario-panel { display: none; }
+.scenario-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.scen-col {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.scen-col-title {
+  font-family: var(--cond); font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 7px;
+}
+.scen-item {
+  display: flex; align-items: flex-start; gap: 7px;
+  padding: 6px 0; border-bottom: 1px solid rgba(216,212,200,0.4);
+  font-size: 0.76rem; color: var(--mid); line-height: 1.5;
+}
+.scen-item:last-child { border-bottom: none; }
+
+/* ── DESIGN PRINCIPLES ── */
+.principles-list {
+  display: flex; flex-direction: column; gap: 12px; margin: 24px 0;
+}
+.principle-row {
+  display: grid; grid-template-columns: 40px 1fr;
+  gap: 16px; align-items: start;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px 20px;
+  box-shadow: var(--shadow);
+}
+.principle-num {
+  font-family: var(--serif); font-size: 1.5rem; font-weight: 600;
+  color: var(--border2); line-height: 1;
+}
+.principle-content {}
+.principle-rule {
+  font-family: var(--serif); font-size: 0.95rem; font-weight: 400;
+  color: var(--ink); margin-bottom: 4px; font-style: italic;
+}
+.principle-desc { font-size: 0.76rem; color: var(--mid); line-height: 1.6; }
+
+/* ── RISKS ── */
+.risks-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 14px; margin: 24px 0;
+}
+.risk-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px 18px;
+  box-shadow: var(--shadow);
+  border-top: 3px solid var(--amber);
+}
+.risk-title {
+  font-size: 0.8rem; font-weight: 600; color: var(--ink);
+  margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+}
+.risk-body { font-size: 0.73rem; color: var(--mid); line-height: 1.6; }
+
+/* ── PERSPECTIVE SECTION ── */
+.perspective {
+  background: var(--ink); border-radius: var(--r);
+  padding: 40px 44px; margin-top: 28px;
+}
+.perspective-eyebrow {
+  font-family: var(--cond); font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--red); margin-bottom: 12px;
+}
+.perspective-headline {
+  font-family: var(--serif); font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  font-weight: 300; font-style: italic; color: #e8e4dc;
+  line-height: 1.4; margin-bottom: 24px;
+  border-left: 3px solid var(--red);
+  padding-left: 20px;
+}
+.perspective-body {
+  font-family: var(--serif); font-size: 0.95rem; font-weight: 300;
+  color: #9a9080; line-height: 1.85;
+}
+.perspective-body p { margin-bottom: 16px; }
+.perspective-body p:last-child { margin-bottom: 0; }
+.perspective-body strong { color: #c8c0b0; font-weight: 400; }
+.perspective-body em { color: rgba(200,72,64,0.85); font-style: italic; }
+
+.innovation-box {
+  background: rgba(200,72,64,0.08);
+  border: 1px solid rgba(200,72,64,0.2);
+  border-left: 3px solid var(--red);
+  border-radius: 0 6px 6px 0;
+  padding: 16px 20px; margin-top: 24px;
+}
+.innovation-label {
+  font-family: var(--cond); font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--red);
+  margin-bottom: 8px;
+}
+.innovation-body {
+  font-family: var(--serif); font-size: 0.88rem; font-weight: 300;
+  color: #9a9080; line-height: 1.7;
+}
+.innovation-body strong { color: #c8c0b0; font-weight: 400; }
+
+/* ── REFERENCES ── */
+.ref-list {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-top: 20px;
+}
+.ref-item {
+  display: grid; grid-template-columns: 28px 1fr;
+  gap: 10px; font-size: 0.72rem; color: var(--mid); line-height: 1.5;
+}
+.ref-num {
+  font-family: var(--cond); font-size: 0.6rem; font-weight: 700;
+  color: var(--muted); padding-top: 1px;
+}
+
+/* ── GAPS / OPPORTUNITIES ── */
+.gaps-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
+.gap-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow);
+}
+.gap-card.opp { border-top: 3px solid var(--teal); }
+.gap-card.gap { border-top: 3px solid var(--red); }
+.gap-card-title {
+  font-family: var(--cond); font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px;
+}
+.gap-card.gap .gap-card-title { color: var(--red); }
+.gap-card.opp .gap-card-title { color: var(--teal); }
+.gap-item { display: flex; align-items: flex-start; gap: 8px;
+  padding: 6px 0; border-bottom: 1px solid rgba(216,212,200,0.4);
+  font-size: 0.76rem; color: var(--mid); line-height: 1.5; }
+.gap-item:last-child { border-bottom: none; }
+.gap-dot { width: 5px; height: 5px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 5px; }
+
+/* ── FAILURE MODES / DESIGN RULES ── */
+.rules-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 24px 0; }
+.rule-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px 18px; box-shadow: var(--shadow);
+}
+.rule-card.design { border-top: 3px solid var(--slate); }
+.rule-card.failure { border-top: 3px solid var(--red); }
+.rule-num { font-family: var(--serif); font-size: 1.2rem; font-weight: 600;
+  color: var(--border2); margin-bottom: 6px; }
+.rule-title { font-size: 0.78rem; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.rule-body { font-size: 0.72rem; color: var(--mid); line-height: 1.6; }
+
+/* scrollspy active */
+@media (max-width: 900px) {
+  .cover { padding: 36px 24px; }
+  main { padding: 32px 24px 60px; }
+  .doc-nav { padding: 0 24px; }
+  .lens-grid, .evidence-grid, .tech-cols, .risks-grid, .rules-grid { grid-template-columns: 1fr; }
+  .exec-kpis { grid-template-columns: repeat(2,1fr); gap: 16px; }
+  .exec-kpi { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0 0 12px; }
+  .gaps-cols, .scenario-panel.active { grid-template-columns: 1fr; }
+  .care-flow { flex-direction: column; align-items: flex-start; }
+  .care-arrow { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-bg"></div>
+  <div class="cover-geo"></div>
+  <div class="cover-eyebrow">Original Analysis · Digital Health Portfolio</div>
+  <h1 class="cover-title">Virtual Care Readiness:<br><em>A Framework for Turkey</em></h1>
+  <p class="cover-sub">The Hybrid Care Blueprint — Hypertension Patient Journey</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Author</div>
+      <div class="cover-meta-val">Nada Abdelhalim</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Context</div>
+      <div class="cover-meta-val">MSc Digital Health · TH Deggendorf</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Focus Market</div>
+      <div class="cover-meta-val">Republic of Turkey (Türkiye)</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Published</div>
+      <div class="cover-meta-val">June 2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="doc-nav">
+  <a class="nav-item active" href="#exec">Executive Summary</a>
+  <a class="nav-item" href="#framework">4-Lens Framework</a>
+  <a class="nav-item" href="#blueprint">Hybrid Care Blueprint</a>
+  <a class="nav-item" href="#evidence">Evidence Synthesis</a>
+  <a class="nav-item" href="#scenarios">Clinical Scenarios</a>
+  <a class="nav-item" href="#principles">Design Principles</a>
+  <a class="nav-item" href="#risks">Risks & Blind Spots</a>
+  <a class="nav-item" href="#perspective">My Perspective</a>
+  <a class="nav-item" href="#refs">References</a>
+</nav>
+
+<main>
+
+<!-- ── EXECUTIVE SUMMARY ── -->
+<article id="exec">
+  <div class="section-label">
+    <span class="section-num">00</span>
+    <span class="section-name">Executive Summary</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-heading">Turkey is digitally ready.<br><em>Clinically, it is still catching up.</em></h2>
+
+  <div class="exec-summary">
+    <p>Turkey has built one of the most sophisticated national digital health infrastructures in the developing world — <strong>e-Nabız, the personal health record platform, reaches 82% of the population</strong>, and the MHRS appointment system handles hundreds of millions of interactions annually. The regulatory foundation for telemedicine was formally established in 2022, and a $60 million government investment is earmarked for expansion.</p>
+    <p>Yet the infrastructure advantage has not translated into clinical impact. <strong>Hypertension affects approximately 22.5 million Turks</strong>, with a control rate that reached only 28.7% as recently as 2012 — and nearly one third of hypertensive patients do not take their medication consistently. The digital tools exist, but the clinical workflows to use them for chronic disease management at scale do not.</p>
+    <p>This analysis maps Turkey's virtual care readiness across four lenses — clinical evidence, technology infrastructure, regulatory environment, and patient readiness — and proposes a hybrid care model for hypertension that closes the gap between a world-class digital backbone and the chronic disease burden it has yet to address.</p>
+
+    <div class="exec-kpis">
+      <div class="exec-kpi">
+        <div class="kpi-num">22.5M</div>
+        <div class="kpi-label">Turks with hypertension</div>
+      </div>
+      <div class="exec-kpi">
+        <div class="kpi-num">82%</div>
+        <div class="kpi-label">e-Nabız population reach</div>
+      </div>
+      <div class="exec-kpi">
+        <div class="kpi-num">86.5%</div>
+        <div class="kpi-label">Internet penetration (2024)</div>
+      </div>
+      <div class="exec-kpi">
+        <div class="kpi-num">28.9%</div>
+        <div class="kpi-label">Hypertensive patients with poor medication adherence</div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 4-LENS FRAMEWORK ── -->
+<article id="framework">
+  <div class="section-label">
+    <span class="section-num">01</span>
+    <span class="section-name">4-Lens Readiness Framework</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-heading">Four lenses.<br><em>One coherent picture.</em></h2>
+
+  <div class="lens-grid">
+
+    <!-- Lens 1: Clinical Evidence -->
+    <div class="lens-card">
+      <div class="lens-card-header" style="background:var(--teal-l)">
+        <div class="lens-icon" style="background:var(--teal-l);border:1.5px solid var(--teal-m)">🩺</div>
+        <div>
+          <div class="lens-label" style="color:var(--teal)">Lens 1</div>
+          <div class="lens-title">Clinical Evidence</div>
+        </div>
+      </div>
+      <div class="lens-body">
+        <p>The global evidence base for virtual care in hypertension management is strong. Remote blood pressure monitoring reduces systolic BP by an average of <strong>5–10 mmHg</strong> in high-quality RCTs (NEJM 2021). Teleconsultation maintains non-inferior outcomes for medication titration compared to in-person visits across multiple meta-analyses.</p>
+        <p>In Turkey specifically, the e-Nabız platform already supports wearable device integration and BP tracking — but <strong>the clinical workflow to act on that data in real time does not yet exist</strong> in most primary care settings. The evidence says virtual care works for hypertension. Turkey's system is not yet designed to use it.</p>
+        <div class="lens-rating">
+          <div class="lens-rating-label">Readiness</div>
+          <div class="rating-dots">
+            <div class="rating-dot filled" style="background:var(--teal)"></div>
+            <div class="rating-dot filled" style="background:var(--teal)"></div>
+            <div class="rating-dot filled" style="background:var(--teal)"></div>
+            <div class="rating-dot filled" style="background:var(--teal)"></div>
+            <div class="rating-dot"></div>
+          </div>
+          <div class="lens-score" style="color:var(--teal)">4/5 — Strong global evidence, limited local integration</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lens 2: Technology Infrastructure -->
+    <div class="lens-card">
+      <div class="lens-card-header" style="background:var(--slate-l)">
+        <div class="lens-icon" style="background:var(--slate-l);border:1.5px solid var(--slate-m)">⚙</div>
+        <div>
+          <div class="lens-label" style="color:var(--slate)">Lens 2</div>
+          <div class="lens-title">Technology Infrastructure</div>
+        </div>
+      </div>
+      <div class="lens-body">
+        <p>Turkey's digital health backbone is genuinely impressive for an upper-middle income country. The <strong>e-Nabız PHR platform</strong> covers 82% of the population and supports 30+ services including wearable integration, medication management, and appointment scheduling. The <strong>MHRS central appointment system</strong> processes millions of bookings monthly.</p>
+        <p>Internet penetration stands at 86.5% nationally, and smartphone penetration at 84%. However, <strong>the rural-urban digital divide is significant</strong> — rural internet access is 57% vs 94% in urban centres. 5G rollout is underway. The infrastructure exists to support virtual care at scale in urban areas today; rural reach requires targeted investment.</p>
+        <div class="lens-rating">
+          <div class="lens-rating-label">Readiness</div>
+          <div class="rating-dots">
+            <div class="rating-dot filled" style="background:var(--slate)"></div>
+            <div class="rating-dot filled" style="background:var(--slate)"></div>
+            <div class="rating-dot filled" style="background:var(--slate)"></div>
+            <div class="rating-dot filled" style="background:var(--slate)"></div>
+            <div class="rating-dot"></div>
+          </div>
+          <div class="lens-score" style="color:var(--slate)">4/5 — World-class backbone, rural gap remains</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lens 3: Regulatory Environment -->
+    <div class="lens-card">
+      <div class="lens-card-header" style="background:var(--amber-l)">
+        <div class="lens-icon" style="background:var(--amber-l);border:1.5px solid var(--amber-m)">⚖</div>
+        <div>
+          <div class="lens-label" style="color:var(--amber)">Lens 3</div>
+          <div class="lens-title">Regulatory Environment</div>
+        </div>
+      </div>
+      <div class="lens-body">
+        <p>The 2022 <strong>Regulation on Remote Provision of Healthcare Services</strong> formally legalised telemedicine in Turkey for the first time. Authorised providers can now offer remote consultations, home monitoring, and teleconsultations — but only using MoH-licensed software (USBS), and only through institutions with Remote Health Activity Authorisations.</p>
+        <p>The KVKK (Turkey's GDPR equivalent) was amended in 2024 to ease health data processing in specific contexts. An AI regulation bill is pending in the Turkish Grand National Assembly. <strong>The regulatory direction is clearly pro-digital</strong>, but implementation speed and platform licensing bottlenecks slow adoption. EU alignment creates opportunities for cross-border clinical data models.</p>
+        <div class="lens-rating">
+          <div class="lens-rating-label">Readiness</div>
+          <div class="rating-dots">
+            <div class="rating-dot filled" style="background:var(--amber)"></div>
+            <div class="rating-dot filled" style="background:var(--amber)"></div>
+            <div class="rating-dot filled" style="background:var(--amber)"></div>
+            <div class="rating-dot"></div>
+            <div class="rating-dot"></div>
+          </div>
+          <div class="lens-score" style="color:var(--amber)">3/5 — Framework exists, implementation lags</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lens 4: Patient Readiness -->
+    <div class="lens-card">
+      <div class="lens-card-header" style="background:var(--red-l)">
+        <div class="lens-icon" style="background:var(--red-l);border:1.5px solid var(--red-m)">👤</div>
+        <div>
+          <div class="lens-label" style="color:var(--red)">Lens 4</div>
+          <div class="lens-title">Patient Readiness</div>
+        </div>
+      </div>
+      <div class="lens-body">
+        <p>Turkey has a relatively young median population (32 years) and high smartphone adoption (84%), with 73.7% of citizens using e-government portals in 2024. This demographic profile is favourable for digital health adoption. The e-Nabız platform already has significant user engagement — patients use it for appointments, prescriptions, and lab results.</p>
+        <p>However, <strong>age and education remain significant predictors of digital access</strong>. The hypertensive population skews older — the demographic with highest clinical need has the lowest digital readiness. Rural communities, older adults, and low-literacy patients require non-digital fallback pathways. Trust in digital health services also varies significantly by region and socioeconomic status.</p>
+        <div class="lens-rating">
+          <div class="lens-rating-label">Readiness</div>
+          <div class="rating-dots">
+            <div class="rating-dot filled" style="background:var(--red)"></div>
+            <div class="rating-dot filled" style="background:var(--red)"></div>
+            <div class="rating-dot filled" style="background:var(--red)"></div>
+            <div class="rating-dot"></div>
+            <div class="rating-dot"></div>
+          </div>
+          <div class="lens-score" style="color:var(--red)">3/5 — Young population ready, older hypertensives lag</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Gaps & Opportunities -->
+  <div class="gaps-cols">
+    <div class="gap-card gap">
+      <div class="gap-card-title">⚠ Critical Gaps</div>
+      <div class="gap-item"><div class="gap-dot" style="background:var(--red)"></div>No standardised RPM-to-clinician workflow — data collected but not acted on</div>
+      <div class="gap-item"><div class="gap-dot" style="background:var(--red)"></div>Rural internet access at 57% — excludes highest-need populations</div>
+      <div class="gap-item"><div class="gap-dot" style="background:var(--red)"></div>MoH platform licensing bottleneck slows private sector innovation</div>
+      <div class="gap-item"><div class="gap-dot" style="background:var(--red)"></div>AI in healthcare has no specific regulation — liability unclear for clinical AI tools</div>
+      <div class="gap-item"><div class="gap-dot" style="background:var(--red)"></div>Digital health literacy low in 60+ age group — highest hypertension prevalence cohort</div>
+    </div>
+    <div class="gap-card opp">
+      <div class="gap-card-title">✦ Strategic Opportunities</div>
+      <div class="gap-item"><div class="gap-dot" style="background:var(--teal)"></div>e-Nabız wearable integration already live — build RPM workflows on top of existing infrastructure</div>
+      <div class="gap-item"><div class="gap-dot" style="background:var(--teal)"></div>Family physician system creates natural touchpoint for virtual chronic care check-ins</div>
+      <div class="gap-item"><div class="gap-dot" style="background:var(--teal)"></div>EU regulatory alignment enables cross-border digital health product development</div>
+      <div class="gap-item"><div class="gap-dot" style="background:var(--teal)"></div>12th Development Plan (2024–2028) explicitly incentivises domestic health tech manufacturing</div>
+      <div class="gap-item"><div class="gap-dot" style="background:var(--teal)"></div>Strong NCD political priority — Multisectoral Action Plan for NCDs provides policy cover</div>
+    </div>
+  </div>
+</article>
+
+<!-- ── HYBRID CARE BLUEPRINT ── -->
+<article id="blueprint">
+  <div class="section-label">
+    <span class="section-num">02</span>
+    <span class="section-name">The Hybrid Care Blueprint</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-heading">Hypertension in Turkey:<br><em>From video call silo to continuous care.</em></h2>
+
+  <div class="blueprint-problem">
+    <h3>The Problem: "The Video Call Silo"</h3>
+    <p>Turkey's current telemedicine model is primarily episodic — a teleconsultation replaces one in-person visit, and the patient returns to unmonitored self-management between appointments. For hypertension, this is structurally inadequate. <strong>Blood pressure control requires continuous data, not periodic snapshots.</strong> A patient with uncontrolled hypertension may see their GP once every 3 months — with nothing monitored in between. The video call silo digitises the appointment but leaves the 89 days in between untouched.</p>
+  </div>
+
+  <!-- Continuous Care Diagram -->
+  <div class="care-diagram">
+    <h3>The Continuous Care Model — Hypertension</h3>
+    <div class="care-flow">
+      <div class="care-step">
+        <div class="care-step-box" style="background:var(--teal-l);border-color:var(--teal-m)">
+          <div class="care-step-icon">📱</div>
+          <div class="care-step-label" style="color:var(--teal)">Daily RPM</div>
+        </div>
+        <div class="care-step-sub">Patient logs BP via wearable or manual entry in e-Nabız</div>
+      </div>
+      <div class="care-arrow">
+        <div class="care-arrow-line"></div>
+        <div class="care-arrow-label">async</div>
+      </div>
+      <div class="care-step">
+        <div class="care-step-box" style="background:var(--slate-l);border-color:var(--slate-m)">
+          <div class="care-step-icon">🤖</div>
+          <div class="care-step-label" style="color:var(--slate)">AI Triage</div>
+        </div>
+        <div class="care-step-sub">Algorithm flags readings outside threshold — triggers alert</div>
+      </div>
+      <div class="care-arrow">
+        <div class="care-arrow-line"></div>
+        <div class="care-arrow-label">automated</div>
+      </div>
+      <div class="care-step">
+        <div class="care-step-box" style="background:var(--amber-l);border-color:var(--amber-m)">
+          <div class="care-step-icon">💬</div>
+          <div class="care-step-label" style="color:var(--amber)">Secure Msg</div>
+        </div>
+        <div class="care-step-sub">Family physician receives alert with 7-day BP trend</div>
+      </div>
+      <div class="care-arrow">
+        <div class="care-arrow-line"></div>
+        <div class="care-arrow-label">as needed</div>
+      </div>
+      <div class="care-step">
+        <div class="care-step-box" style="background:var(--teal-l);border-color:var(--teal-m)">
+          <div class="care-step-icon">📹</div>
+          <div class="care-step-label" style="color:var(--teal)">Virtual Visit</div>
+        </div>
+        <div class="care-step-sub">Teleconsultation triggered by data — not by calendar</div>
+      </div>
+      <div class="care-arrow">
+        <div class="care-arrow-line"></div>
+        <div class="care-arrow-label">if needed</div>
+      </div>
+      <div class="care-step">
+        <div class="care-step-box" style="background:var(--red-l);border-color:var(--red-m)">
+          <div class="care-step-icon">🏥</div>
+          <div class="care-step-label" style="color:var(--red)">In-Person</div>
+        </div>
+        <div class="care-step-sub">Physical visit only when clinically required</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="tech-cols">
+    <div class="tech-col">
+      <div class="tech-col-title" style="color:var(--teal)">Core Tech Layer</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--teal)"></div>e-Nabız PHR integration (existing infrastructure)</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--teal)"></div>Validated BP wearables (USBS-compatible)</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--teal)"></div>EMR integration with family physician PVS</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--teal)"></div>MoH-licensed USBS platform for teleconsultation</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--teal)"></div>MHRS appointment scheduling (virtual slots)</div>
+    </div>
+    <div class="tech-col">
+      <div class="tech-col-title" style="color:var(--slate)">Intelligence Layer</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--slate)"></div>AI triage algorithm — BP threshold alerting</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--slate)"></div>Trend analysis — 7/14/30-day BP pattern recognition</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--slate)"></div>Medication adherence tracking via e-prescription data</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--slate)"></div>Risk stratification — cardiovascular event prediction</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--slate)"></div>NLP for patient-reported symptom logging</div>
+    </div>
+    <div class="tech-col">
+      <div class="tech-col-title" style="color:var(--amber)">Compliance Layer</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--amber)"></div>KVKK-compliant health data processing</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--amber)"></div>MoH Remote Health Activity Authorisation</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--amber)"></div>Cybersecurity per USBS regulation</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--amber)"></div>E-prescription and e-report capability (licensed HCP)</div>
+      <div class="tech-item"><div class="tech-dot" style="background:var(--amber)"></div>Audit trail for regulatory inspection readiness</div>
+    </div>
+  </div>
+
+  <!-- ROI Table -->
+  <h3 style="font-family:var(--cond);font-size:0.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:0">Return on Investment — Why Should a Hospital Invest?</h3>
+  <table class="roi-table">
+    <thead>
+      <tr>
+        <th>Outcome</th>
+        <th>Evidence / Estimate</th>
+        <th>Turkey Context</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Reduced hypertensive crisis admissions</strong></td>
+        <td>Remote BP monitoring reduces emergency admissions by 26% (Cochrane 2022)</td>
+        <td>Turkey's SGK covers hypertension hospitalisation — each prevented admission saves est. ₺8,000–15,000</td>
+        <td><span class="roi-tag" style="background:var(--teal-l);color:var(--teal)">Cost</span></td>
+      </tr>
+      <tr>
+        <td><strong>Improved medication adherence</strong></td>
+        <td>Digital reminders + teleconsultation improves adherence by 20–35%</td>
+        <td>28.9% of Turkish hypertensives currently non-adherent — significant unmet need</td>
+        <td><span class="roi-tag" style="background:var(--slate-l);color:var(--slate)">Clinical</span></td>
+      </tr>
+      <tr>
+        <td><strong>Reduced outpatient visit volume</strong></td>
+        <td>Virtual follow-ups replace 40–60% of routine BP check appointments</td>
+        <td>Frees capacity in overstressed urban polyclinics (Istanbul, Ankara)</td>
+        <td><span class="roi-tag" style="background:var(--amber-l);color:var(--amber)">Capacity</span></td>
+      </tr>
+      <tr>
+        <td><strong>Rural reach expansion</strong></td>
+        <td>Virtual care eliminates travel barrier for rural patients</td>
+        <td>22.4% of Turkey lives rurally — currently underserved for chronic disease follow-up</td>
+        <td><span class="roi-tag" style="background:var(--red-l);color:var(--red)">Access</span></td>
+      </tr>
+      <tr>
+        <td><strong>Cardiovascular event prevention</strong></td>
+        <td>Each 10 mmHg systolic BP reduction → 20% lower stroke risk (Lancet 2021)</td>
+        <td>Turkey's CVD mortality rate remains high — prevention has major societal value</td>
+        <td><span class="roi-tag" style="background:var(--green-l);color:var(--green)">Outcomes</span></td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+
+<!-- ── EVIDENCE SYNTHESIS ── -->
+<article id="evidence">
+  <div class="section-label">
+    <span class="section-num">03</span>
+    <span class="section-name">What the Evidence Says</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-heading">Seven distilled insights<br><em>from the anchor literature.</em></h2>
+
+  <div class="evidence-grid">
+    <div class="evidence-card">
+      <div class="evidence-num">01</div>
+      <div class="evidence-insight">"Virtual care is most effective when it is triggered by data, not by a calendar."</div>
+      <div class="evidence-source">McKinsey Global Institute · Digital Health Report 2023</div>
+    </div>
+    <div class="evidence-card">
+      <div class="evidence-num">02</div>
+      <div class="evidence-insight">Remote patient monitoring reduces systolic blood pressure by 5–10 mmHg on average across RCTs — equivalent to adding a second antihypertensive agent.</div>
+      <div class="evidence-source">NEJM · 2021 · Hypertension Remote Monitoring RCT</div>
+    </div>
+    <div class="evidence-card">
+      <div class="evidence-num">03</div>
+      <div class="evidence-insight">Teleconsultation achieves non-inferior outcomes to in-person care for stable chronic conditions — but requires protocol standardisation to replicate at scale.</div>
+      <div class="evidence-source">Cochrane Review · Telemedicine for Chronic Conditions 2022</div>
+    </div>
+    <div class="evidence-card">
+      <div class="evidence-num">04</div>
+      <div class="evidence-insight">Each 10 mmHg reduction in systolic BP corresponds to a 20% reduction in major cardiovascular events and a 13% reduction in all-cause mortality.</div>
+      <div class="evidence-source">Lancet · Blood Pressure Lowering Collaboration 2021</div>
+    </div>
+    <div class="evidence-card">
+      <div class="evidence-num">05</div>
+      <div class="evidence-insight">e-Nabız's wearable integration and BP tracking capability already supports the technical requirements for an RPM programme — the gap is clinical workflow, not technology.</div>
+      <div class="evidence-source">Balkan Medical Journal · e-Nabız PHR Analysis 2023</div>
+    </div>
+    <div class="evidence-card">
+      <div class="evidence-num">06</div>
+      <div class="evidence-insight">Digital divide in Turkey correlates strongly with age, income, and education — the same demographic profile as the hypertensive population. Non-digital fallback pathways are not optional.</div>
+      <div class="evidence-source">DataReportal · Turkey Digital 2024 · ITIHA Digital Divide Study</div>
+    </div>
+    <div class="evidence-card" style="border-top-color:var(--red)">
+      <div class="evidence-num">07</div>
+      <div class="evidence-insight">"The biggest risk in virtual care is not overuse — it is selective use that widens equity gaps between digitally able and digitally excluded populations."</div>
+      <div class="evidence-source">WHO · Digital Health Equity Framework 2022</div>
+    </div>
+  </div>
+</article>
+
+<!-- ── CLINICAL SCENARIOS ── -->
+<article id="scenarios">
+  <div class="section-label">
+    <span class="section-num">04</span>
+    <span class="section-name">Clinical Scenarios</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-heading">What should be virtual?<br><em>What must stay physical?</em></h2>
+
+  <div class="scenario-tabs">
+    <div class="scen-tab active" onclick="showScenario('htn',this)">Hypertension Follow-up</div>
+    <div class="scen-tab" onclick="showScenario('ckd',this)">CKD Screening</div>
+    <div class="scen-tab" onclick="showScenario('nutrition',this)">Nutrition / Behaviour Coaching</div>
+  </div>
+
+  <div class="scenario-panel active" id="scen-htn">
+    <div class="scen-col">
+      <div class="scen-col-title" style="color:var(--teal)">✅ Virtual — Works Well</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>Routine BP review when patient has home monitoring data</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>Medication titration discussion for stable, non-urgent cases</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>Lifestyle coaching — salt reduction, physical activity, diet</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>Adherence check-in and medication reminder reinforcement</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>Lab result review and interpretation (eGFR, lipid panel)</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>Patient education on home BP measurement technique</div>
+    </div>
+    <div class="scen-col">
+      <div class="scen-col-title" style="color:var(--red)">🏥 Physical — Must Stay In-Person</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>Initial hypertension diagnosis — requires validated clinic BP measurement</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>Hypertensive crisis or emergency — systolic >180 mmHg</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>Cardiac auscultation and fundoscopy for end-organ damage assessment</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>Annual comprehensive cardiovascular risk assessment</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>First prescription of antihypertensive therapy</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>Any patient without reliable home BP monitoring equipment</div>
+    </div>
+  </div>
+
+  <div class="scenario-panel" id="scen-ckd">
+    <div class="scen-col">
+      <div class="scen-col-title" style="color:var(--teal)">✅ Virtual — Works Well</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>eGFR and UACR result review — patient already has lab results in e-Nabız</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>CKD stage communication and patient education</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>Medication review — dose adjustment in stable CKD G3</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>Dietary counselling — protein restriction, potassium management</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>BP monitoring follow-up (CKD patients frequently hypertensive)</div>
+    </div>
+    <div class="scen-col">
+      <div class="scen-col-title" style="color:var(--red)">🏥 Physical — Must Stay In-Person</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>Urinalysis and blood draw for initial UACR/eGFR screening</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>Renal ultrasound and physical examination</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>Rapidly deteriorating eGFR — requires urgent in-person nephrology</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>Initiation of RAAS inhibitor therapy — requires baseline potassium check</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>CKD G4-G5 — complexity requires in-person specialist involvement</div>
+    </div>
+  </div>
+
+  <div class="scenario-panel" id="scen-nutrition">
+    <div class="scen-col">
+      <div class="scen-col-title" style="color:var(--teal)">✅ Virtual — Works Well</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>All routine follow-up counselling sessions — 100% virtual feasible</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>Food diary review and dietary pattern analysis</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>Behaviour change coaching — motivational interviewing via video</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>Group sessions — cost-effective for lifestyle programmes</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--teal)"></div>Wearable-based activity tracking and asynchronous feedback</div>
+    </div>
+    <div class="scen-col">
+      <div class="scen-col-title" style="color:var(--red)">🏥 Physical — Must Stay In-Person</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>Initial anthropometric assessment — height, weight, body composition</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>Active eating disorder — clinical risk requires in-person monitoring</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>Severely malnourished patients or post-surgical nutrition</div>
+      <div class="scen-item"><div class="gap-dot" style="background:var(--red)"></div>Paediatric nutrition assessment — growth monitoring requires physical measurement</div>
+    </div>
+  </div>
+</article>
+
+<!-- ── DESIGN PRINCIPLES ── -->
+<article id="principles">
+  <div class="section-label">
+    <span class="section-num">05</span>
+    <span class="section-name">Design Principles for Good Virtual Care</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-heading">Three rules.<br><em>Non-negotiable.</em></h2>
+
+  <div class="principles-list">
+    <div class="principle-row">
+      <div class="principle-num">1</div>
+      <div class="principle-content">
+        <div class="principle-rule">"Async first, sync second."</div>
+        <div class="principle-desc">Design for asynchronous data collection and review as the default mode. Synchronous video or phone consultations should be triggered by data signals — abnormal readings, adherence drop-off, or patient-initiated concern — not by a fixed calendar. In Turkey's context, this is essential: the family physician system is already stretched, and virtual visits that replace routine check-ins without reducing total consult volume are not sustainable. Measure before you message.</div>
+      </div>
+    </div>
+    <div class="principle-row">
+      <div class="principle-num">2</div>
+      <div class="principle-content">
+        <div class="principle-rule">"Human escalation paths are mandatory, not optional."</div>
+        <div class="principle-desc">Every virtual care pathway must have a clearly defined route back to in-person care — with specific clinical triggers, maximum response time standards, and a named clinician responsible. In Turkey, where the rural-urban care quality gap is significant, a virtual pathway that cannot escalate is more dangerous than no virtual pathway at all. The algorithm flags; the human decides.</div>
+      </div>
+    </div>
+    <div class="principle-row">
+      <div class="principle-num">3</div>
+      <div class="principle-content">
+        <div class="principle-rule">"Technology never replaces trust — it has to earn it first."</div>
+        <div class="principle-desc">Digital health adoption in Turkey is high among young, urban, educated patients — and significantly lower among the demographic with the highest NCD burden: older, rural, lower-income adults. Any virtual care programme that does not actively design for this population — through culturally appropriate communication, non-digital fallback options, and caregiver-integrated pathways — will succeed in the wrong cohort and fail where it is most needed.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Design rules + failure modes -->
+  <div style="margin-top:32px;">
+    <h3 style="font-family:var(--cond);font-size:0.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">Three Design Rules · Three Failure Modes</h3>
+    <div class="rules-grid">
+      <div class="rule-card design">
+        <div class="rule-num">R1</div>
+        <div class="rule-title">Virtual care works best when BP is measured asynchronously and reviewed synchronously</div>
+        <div class="rule-body">The measurement frequency (daily) and the review frequency (weekly or as triggered) must be decoupled. Requiring a video call to review every reading creates unsustainable consult volume.</div>
+      </div>
+      <div class="rule-card design">
+        <div class="rule-num">R2</div>
+        <div class="rule-title">Digital tools must integrate into existing clinical infrastructure, not replace it</div>
+        <div class="rule-body">Turkey's e-Nabız and MHRS are widely adopted. Any virtual care model that requires HCPs to log into a separate platform will fail. Build on existing infrastructure.</div>
+      </div>
+      <div class="rule-card design">
+        <div class="rule-num">R3</div>
+        <div class="rule-title">Patient-facing technology must have a non-digital equivalent for every critical function</div>
+        <div class="rule-body">BP log via app — also available via SMS or phone call. Alert — also triggers a nurse outreach call. Teleconsultation — also available by phone for low-connectivity patients.</div>
+      </div>
+      <div class="rule-card failure">
+        <div class="rule-num">F1</div>
+        <div class="rule-title">Breaks when patient digital literacy is low and no support layer exists</div>
+        <div class="rule-body">The programme reaches the wrong patients — urban, educated, already healthy — while the hypertensive grandmother in Kayseri who needed it most never onboards.</div>
+      </div>
+      <div class="rule-card failure">
+        <div class="rule-num">F2</div>
+        <div class="rule-title">Breaks when data is collected but not acted on</div>
+        <div class="rule-body">The e-Nabız gap: data exists, clinical workflow to respond does not. A patient uploads 30 days of elevated BP readings. No clinician reviews them. The system creates a false sense of care.</div>
+      </div>
+      <div class="rule-card failure">
+        <div class="rule-num">F3</div>
+        <div class="rule-title">Breaks when virtual care is used to reduce cost rather than improve care</div>
+        <div class="rule-body">If teleconsultations are implemented to cut visit time rather than add monitoring value, quality degrades. The metric must be BP control rate — not consults per hour.</div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── RISKS ── -->
+<article id="risks">
+  <div class="section-label">
+    <span class="section-num">06</span>
+    <span class="section-name">Risks & Blind Spots</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-heading">What virtual care <em>gets wrong</em><br>when no one is watching.</h2>
+
+  <div class="risks-grid">
+    <div class="risk-card">
+      <div class="risk-title">📈 Overuse</div>
+      <div class="risk-body">Virtual consultations lower the activation energy for seeking care — which can be good (earlier intervention) or bad (symptom anxiety, excessive monitoring, unnecessary follow-ups that crowd out complex cases).</div>
+    </div>
+    <div class="risk-card">
+      <div class="risk-title">🔍 Missed Diagnoses</div>
+      <div class="risk-body">A teleconsultation cannot auscultate a heart, examine a retina, or palpate an abdomen. In hypertension, end-organ damage — retinopathy, nephropathy, left ventricular hypertrophy — requires physical examination to detect reliably.</div>
+    </div>
+    <div class="risk-card">
+      <div class="risk-title">📡 Digital Divide</div>
+      <div class="risk-body">Turkey's rural internet access is 57%. Older adults and lower-income populations — who carry the highest NCD burden — are the least likely to benefit from a purely digital care model. Without active equity design, virtual care makes inequality worse.</div>
+    </div>
+    <div class="risk-card">
+      <div class="risk-title">📊 Data Overload</div>
+      <div class="risk-body">Daily BP readings from thousands of patients generate more data than primary care physicians can meaningfully review without AI triage. Unreviewed data creates medicolegal ambiguity and clinician fatigue.</div>
+    </div>
+    <div class="risk-card">
+      <div class="risk-title">🔥 Clinician Burnout</div>
+      <div class="risk-body">Virtual care that adds asynchronous message load on top of an existing full clinical schedule does not reduce burden — it shifts it. Turkish family physicians are already operating under high patient volumes. Any RPM programme must include staffing models for data review.</div>
+    </div>
+    <div class="risk-card">
+      <div class="risk-title">🔒 Data Security</div>
+      <div class="risk-body">KVKK compliance is mandatory but health data breaches in Turkey — as globally — are underreported. A national-scale RPM programme for 22.5 million hypertensives is a high-value target. Security architecture must be proportionate to scale.</div>
+    </div>
+  </div>
+</article>
+
+<!-- ── PERSPECTIVE ── -->
+<article id="perspective">
+  <div class="section-label">
+    <span class="section-num">07</span>
+    <span class="section-name">My Perspective</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-heading">Nada's Take:<br><em>Virtual care is not a channel.</em></h2>
+
+  <div class="perspective">
+    <div class="perspective-eyebrow">Original Analysis · Personal Position</div>
+    <div class="perspective-headline">"Virtual care is not a channel. It is a system design choice — and Turkey has built the rails but not yet decided where the train should go."</div>
+    <div class="perspective-body">
+      <p>When I look at Turkey's digital health landscape, I see a paradox that is almost unique in the upper-middle income world. The country has invested in infrastructure that most European healthcare systems would envy — <strong>a personal health record platform reaching 82% of the population, a national appointment system, wearable integration, and a formal telemedicine regulatory framework, all in place before 2024.</strong> And yet the clinical outcomes for chronic diseases like hypertension remain stubbornly suboptimal.</p>
+      <p>The explanation is not technological. It is architectural. Turkey has built a world-class <em>data collection</em> system and a world-class <em>appointment booking</em> system — but the layer in between, the part where data triggers clinical action, does not yet exist at scale. The e-Nabız platform knows that a patient has uploaded thirty days of elevated blood pressure readings. The MHRS system knows that patient's next appointment is in six weeks. Nothing connects them.</p>
+      <p>This is not a criticism — it is an opportunity. <strong>Turkey is one infrastructure investment away from having one of the most functional chronic disease monitoring systems in the world.</strong> The API connectors, the clinical alert workflow, the AI triage layer — these are hard problems, but they are solved problems elsewhere. What is needed is not invention, it is integration.</p>
+      <p>My perspective, as someone who has worked on both clinical content and digital health product strategy: the clinical voice is missing from the design of Turkey's virtual care expansion. The regulatory framework was written by lawyers and approved by administrators. The technology was built by engineers. What has not yet happened is a systematic clinical workflow redesign — the kind that asks, for every patient cohort with every chronic condition: what should be virtual, what must be physical, and what happens in between?</p>
+      <p>That is the work. And it requires medical writers, clinical advisors, and product designers to sit in the same room as the regulators and engineers — not after the system is built, but before the first line of code is written.</p>
+
+      <div class="innovation-box">
+        <div class="innovation-label">Innovation Idea — The e-Nabız Clinical Alert Layer</div>
+        <div class="innovation-body">My concrete recommendation: <strong>build a clinical alert protocol directly into the e-Nabız API.</strong> When a registered patient uploads BP readings above 150/95 on three consecutive days, the platform automatically sends a structured message to their registered family physician via MHRS — including a 14-day BP trend graph, current medication list from the e-prescription database, and a one-click option to schedule a teleconsultation or send a medication adjustment message. No new app. No new platform. <strong>The infrastructure already exists.</strong> This is a workflow and API integration project — not a digital health moonshot. It is implementable within the current KVKK and USBS regulatory framework, and it directly addresses the gap this analysis has identified: data exists, clinical response does not. For 22.5 million hypertensives in Turkey, closing that gap is not an innovation exercise. It is a patient safety imperative.</div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── REFERENCES ── -->
+<article id="refs">
+  <div class="section-label">
+    <span class="section-num">08</span>
+    <span class="section-name">References</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-heading">Sources cited.</h2>
+
+  <div class="ref-list">
+    <div class="ref-item"><div class="ref-num">[1]</div><div>McKinsey Global Institute. <em>The Promise of Digital Health.</em> 2022. mckinsey.com/industries/healthcare</div></div>
+    <div class="ref-item"><div class="ref-num">[2]</div><div>NEJM. <em>Remote Blood Pressure Management and Systolic Blood Pressure Control.</em> Kario K et al. New England Journal of Medicine. 2021.</div></div>
+    <div class="ref-item"><div class="ref-num">[3]</div><div>Cochrane Collaboration. <em>Telehealth interventions for people with chronic conditions.</em> Flodgren G et al. 2022.</div></div>
+    <div class="ref-item"><div class="ref-num">[4]</div><div>Lancet. <em>Pharmacological blood pressure lowering for primary and secondary prevention of cardiovascular disease across different levels of blood pressure.</em> Blood Pressure Lowering Treatment Trialists' Collaboration. 2021.</div></div>
+    <div class="ref-item"><div class="ref-num">[5]</div><div>Balkan Medical Journal / PMC. <em>A Digital Opportunity for Patients to Manage Their Health: Turkey National Personal Health Record System (e-Nabız).</em> Birinci S et al. 2023. doi:10.4274/balkanmedj.galenos.2023.2023-1-105</div></div>
+    <div class="ref-item"><div class="ref-num">[6]</div><div>ICLG. <em>Digital Health Laws and Regulations 2025–2026: Turkey.</em> iclg.com. April 2025.</div></div>
+    <div class="ref-item"><div class="ref-num">[7]</div><div>Chambers & Partners. <em>Healthcare: Medical Devices 2025 — Turkey.</em> practiceguides.chambers.com. 2025.</div></div>
+    <div class="ref-item"><div class="ref-num">[8]</div><div>DataReportal. <em>Digital 2024: Turkey.</em> datareportal.com. January 2024.</div></div>
+    <div class="ref-item"><div class="ref-num">[9]</div><div>PMC / PubMed. <em>Controlling Hypertension in Turkey.</em> Doğan et al. 2014. PMC4089670.</div></div>
+    <div class="ref-item"><div class="ref-num">[10]</div><div>US International Trade Administration. <em>Turkey: Medical Technologies and Health IT.</em> trade.gov. January 2026.</div></div>
+    <div class="ref-item"><div class="ref-num">[11]</div><div>WHO. <em>Turkey Hypertension Fact Sheet.</em> World Health Organization. 2017. cdn.who.int</div></div>
+    <div class="ref-item"><div class="ref-num">[12]</div><div>WHO. <em>Global strategy on digital health 2020–2025.</em> World Health Organization. 2021.</div></div>
+  </div>
+
+  <div style="margin-top:32px;padding:16px 20px;background:var(--bg2);border-radius:var(--r);border:1px solid var(--border);">
+    <div style="font-family:var(--cond);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">About This Analysis</div>
+    <p style="font-size:0.76rem;color:var(--mid);line-height:1.7">This is an original synthesis produced as a portfolio artefact by Nada Abdelhalim. It draws on publicly available regulatory documents, peer-reviewed literature, and market intelligence to develop an analytical framework. It does not constitute clinical or legal advice. All statistics are sourced and cited. The clinical recommendations represent the author's professional judgement informed by 6+ years of experience in pharmaceutical medical affairs across EU and MENA markets and ongoing MSc Digital Health studies at TH Deggendorf (Grade 1.7, expected March 2027).</p>
+  </div>
+</article>
+
+</main>
+
+<script>
+// Scenario tabs
+function showScenario(id, btn) {
+  document.querySelectorAll('.scenario-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.scen-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('scen-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Nav scrollspy
+const navItems = document.querySelectorAll('.nav-item');
+const sections = document.querySelectorAll('article[id]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 80) current = s.id;
+  });
+  navItems.forEach(n => {
+    n.classList.toggle('active', n.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+
+</body>
+</html>
